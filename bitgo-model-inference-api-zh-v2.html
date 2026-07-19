@@ -1,0 +1,1222 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="bitgo 大模型推理 API 调用、模型价格、安全事项与附录。">
+  <title>bitgo 大模型推理 API（v2）</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #0b1324;
+      --muted: #53627a;
+      --paper: #f7fbff;
+      --soft: #eef6ff;
+      --line: #c9d9ef;
+      --blue: #0069ff;
+      --blue-dark: #003ea8;
+      --blue-soft: #dcecff;
+      --black: #06111f;
+      --white: #ffffff;
+      --code: #171717;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      line-height: 1.68;
+    }
+
+    .shell {
+      min-height: 100vh;
+      background:
+        linear-gradient(180deg, rgba(0, 105, 255, 0.14), rgba(247, 251, 255, 0) 340px),
+        radial-gradient(circle at top right, rgba(0, 105, 255, 0.16), transparent 360px);
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 18px 24px;
+      background: rgba(247, 251, 255, 0.92);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(201, 217, 239, 0.72);
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--blue);
+      color: var(--white);
+      font-weight: 900;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 18px;
+      font-size: 14px;
+    }
+
+    .nav-links a {
+      color: var(--ink);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+    }
+
+    .nav-links a:hover {
+      border-color: var(--ink);
+    }
+
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 36px 24px 88px;
+    }
+
+    .hero {
+      margin-bottom: 22px;
+      scroll-margin-top: 92px;
+    }
+
+    .hero-copy {
+      width: 100%;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      padding: 7px 12px;
+      border: 1px solid var(--blue);
+      border-radius: 999px;
+      background: var(--blue);
+      color: var(--white);
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .hero-topbar {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .hero-topbar .eyebrow {
+      margin-bottom: 0;
+    }
+
+    .lead {
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .hero-title {
+      margin: 0 0 12px;
+      padding: 0;
+      color: var(--ink);
+      font-size: 28px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .hero-note {
+      margin: 12px 0 0;
+      padding: 13px 16px;
+      border-left: 6px solid var(--blue);
+      border-radius: 8px;
+      background: var(--blue-soft);
+      color: var(--blue-dark);
+      font-weight: 800;
+    }
+
+    .copy-block {
+      width: 100%;
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.62);
+    }
+
+    .copy-text-wrap {
+      position: relative;
+    }
+
+    .copy-text-block {
+      margin: 0;
+      padding: 16px 66px 16px 18px;
+      border: 1px solid rgba(0, 105, 255, 0.34);
+      border-left: 6px solid var(--blue);
+      border-radius: 8px;
+      background: #f4f9ff;
+      color: var(--ink);
+      line-height: 1.62;
+    }
+
+    .agent-doc-link {
+      display: block;
+      margin-top: 12px;
+      color: var(--ink);
+      font-weight: 400;
+    }
+
+    .agent-doc-link a {
+      color: var(--blue);
+      font-weight: 800;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      overflow-wrap: anywhere;
+    }
+
+    .agent-doc-link a:hover,
+    .agent-doc-link a:focus-visible {
+      color: var(--blue-dark);
+      outline: none;
+    }
+
+    .copy-actions {
+      position: absolute;
+      right: 14px;
+      bottom: 14px;
+      z-index: 1;
+    }
+
+    .copy-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      border: 1px solid #8fc2ff;
+      border-radius: 8px;
+      background: var(--blue);
+      color: var(--white);
+      cursor: pointer;
+      transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
+    }
+
+    .copy-button svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .copy-button[data-state="success"] {
+      background: var(--blue-dark);
+    }
+
+    .copy-button[data-state="error"] {
+      background: #b42318;
+      border-color: #ffdad6;
+    }
+
+    .copy-button:hover,
+    .copy-button:focus-visible {
+      background: #1d7bff;
+      border-color: var(--white);
+      outline: none;
+      transform: translateY(-1px);
+    }
+
+    .prompt-copy-wrap {
+      position: relative;
+    }
+
+    .prompt-copy-wrap pre {
+      margin-top: 8px;
+    }
+
+    .system-prompt-intro {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      justify-content: space-between;
+      margin: 0 0 12px;
+    }
+
+    .system-prompt-intro p {
+      flex: 1 1 auto;
+      margin: 0;
+      min-width: 0;
+    }
+
+    .system-prompt-copy-actions {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      margin: 0;
+    }
+
+    .system-prompt-copy-button {
+      gap: 7px;
+      width: auto;
+      height: 32px;
+      padding: 0 12px;
+      border-color: rgba(0, 105, 255, 0.28);
+      background: var(--white);
+      color: var(--blue-dark);
+      font-size: 13px;
+      font-weight: 800;
+      box-shadow: 0 6px 16px rgba(0, 105, 255, 0.10);
+    }
+
+    .system-prompt-copy-button:hover,
+    .system-prompt-copy-button:focus-visible {
+      background: var(--blue-soft);
+      border-color: var(--blue);
+      color: var(--blue-dark);
+    }
+
+    .system-prompt-copy-button[data-state="success"] {
+      background: var(--blue);
+      color: var(--white);
+      border-color: var(--blue);
+    }
+
+    .system-prompt-copy-button[data-state="error"] {
+      background: #fff5f5;
+      color: #b42318;
+      border-color: #ffdad6;
+    }
+
+    .system-prompt-copy-button .copy-button-label {
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .system-prompt-copy-actions .copy-status {
+      position: static;
+      width: auto;
+      height: auto;
+      margin: 0 0 0 8px;
+      padding: 0;
+      overflow: visible;
+      clip: auto;
+      border: 0;
+      color: var(--blue-dark);
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 32px;
+      z-index: 1;
+    }
+
+    .copy-status {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      padding: 0;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 28px;
+    }
+
+    .metric {
+      padding: 14px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      border-radius: 8px;
+    }
+
+    .metric strong {
+      display: block;
+      color: #8fc2ff;
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .metric span {
+      display: block;
+      margin-top: 8px;
+      color: #c5d8f2;
+      font-size: 12px;
+    }
+
+    .section {
+      margin-top: 28px;
+      scroll-margin-top: 92px;
+      padding: 32px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .section.dark {
+      border-color: var(--black);
+      background: var(--black);
+      color: var(--white);
+    }
+
+    .section.dark p,
+    .section.dark li {
+      color: #e9f3ff;
+    }
+
+    .section.dark h2,
+    .section.dark h3 {
+      color: #8fc2ff;
+    }
+
+    .section h2 {
+      margin: 0 0 16px;
+      padding: 0;
+      border: 0;
+      font-size: 28px;
+      line-height: 1.2;
+    }
+
+    .section h3 {
+      margin: 24px 0 10px;
+      font-size: 18px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 18px;
+    }
+
+    .grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .tile {
+      min-width: 0;
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--soft);
+      overflow-wrap: anywhere;
+    }
+
+    .tile strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 17px;
+    }
+
+    .tile span {
+      color: #34445c;
+    }
+
+    .text-highlight {
+      display: inline;
+      padding: 2px 5px;
+      border-radius: 6px;
+      background: var(--blue-soft);
+      color: var(--blue-dark);
+      font-weight: 800;
+    }
+
+    .coin-heading {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .coin-title {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+      min-width: 0;
+      padding-top: 2px;
+    }
+
+    .coin-title strong {
+      margin: 0;
+    }
+
+    .coin-logo {
+      flex: 0 0 auto;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      box-shadow: inset 0 0 0 1px rgba(6, 17, 31, 0.12);
+    }
+
+    .coin-logo.eth {
+      background: #eef2ff;
+      color: #627eea;
+    }
+
+    .coin-logo.ltc {
+      background: #eef4ff;
+      color: #345d9d;
+    }
+
+    .coin-logo.btc {
+      background: #fff4df;
+      color: #f7931a;
+    }
+
+    .coin-tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: var(--white);
+      color: var(--blue-dark);
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.2;
+      box-shadow: inset 0 0 0 1px rgba(0, 105, 255, 0.24);
+    }
+
+    .coin-tag.fast {
+      background: #e7f7ef;
+      color: #17633a;
+      box-shadow: inset 0 0 0 1px rgba(23, 99, 58, 0.2);
+    }
+
+    .coin-tag.medium {
+      background: #eef4ff;
+      color: #345d9d;
+      box-shadow: inset 0 0 0 1px rgba(52, 93, 157, 0.22);
+    }
+
+    .coin-tag.slow {
+      background: #fff4df;
+      color: #8c4f00;
+      box-shadow: inset 0 0 0 1px rgba(140, 79, 0, 0.22);
+    }
+
+    .deposit-qr {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      margin: 16px 0;
+    }
+
+    .deposit-qr img {
+      width: min(100%, 220px);
+      aspect-ratio: 1;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--white);
+    }
+
+    .deposit-qr .qr-caption {
+      color: var(--blue-dark);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .section.dark .tile {
+      border-color: #c9d9ef;
+      background: #f4f9ff;
+      color: var(--ink);
+    }
+
+    .section.dark .tile strong {
+      color: var(--ink);
+    }
+
+    .section.dark .tile span {
+      color: #34445c;
+    }
+
+    .section.dark .tile code {
+      background: var(--blue-soft);
+      color: var(--blue-dark);
+    }
+
+    .section.dark .callout {
+      color: var(--ink);
+    }
+
+    .section.dark .callout code {
+      background: var(--white);
+      color: var(--blue-dark);
+      font-weight: 800;
+    }
+
+    .section.dark .step-list li {
+      color: var(--ink);
+    }
+
+    .section.dark .step-list li code {
+      background: var(--blue-soft);
+      color: var(--blue-dark);
+      font-weight: 800;
+    }
+
+    .workflow-figure {
+      margin: 16px 0 16px;
+      padding: 8px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--white);
+    }
+
+    .workflow-figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 6px;
+    }
+
+    .step-list {
+      counter-reset: steps;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .step-list li {
+      counter-increment: steps;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+      min-width: 0;
+      min-height: 154px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--white);
+      color: var(--ink);
+      line-height: 1.55;
+      overflow-wrap: anywhere;
+    }
+
+    .step-list li::before {
+      content: counter(steps, decimal-leading-zero);
+      display: inline-flex;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: var(--blue);
+      color: var(--white);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 18px 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .table-scroll {
+      overflow-x: auto;
+      margin: 18px 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .table-scroll table {
+      min-width: 980px;
+      margin: 0;
+      border: 0;
+      border-radius: 0;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 12px 14px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th:nth-child(-n + 2),
+    td:nth-child(-n + 2),
+    td:nth-child(-n + 2) code {
+      white-space: nowrap;
+      word-break: normal;
+      overflow-wrap: normal;
+    }
+
+    .field-dictionary td:nth-child(2),
+    .field-dictionary td:nth-child(2) code {
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    th {
+      background: var(--black);
+      color: #8fc2ff;
+      font-weight: 800;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    code {
+      border-radius: 5px;
+      background: rgba(0, 105, 255, 0.14);
+      color: var(--blue-dark);
+      padding: 0.16em 0.36em;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.92em;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .dark code {
+      background: rgba(0, 105, 255, 0.18);
+      color: #8fc2ff;
+    }
+
+    pre {
+      overflow-x: auto;
+      margin: 16px 0;
+      padding: 18px;
+      border: 1px solid rgba(0, 105, 255, 0.34);
+      border-radius: 8px;
+      background: var(--code);
+      color: #f4f9ff;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+      overflow-wrap: normal;
+      word-break: normal;
+    }
+
+    ul, ol {
+      padding-left: 24px;
+    }
+
+    .callout {
+      margin-top: 18px;
+      padding: 18px 20px;
+      border-left: 6px solid var(--blue);
+      background: var(--blue-soft);
+      border-radius: 8px;
+      font-weight: 700;
+    }
+
+    .warning {
+      margin-top: 18px;
+      padding: 18px 20px;
+      border-left: 6px solid #cc3a3a;
+      background: #fff0f0;
+      border-radius: 8px;
+      color: #7c1d1d;
+      font-weight: 700;
+    }
+
+    .footer-note {
+      margin-top: 34px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    @media (max-width: 900px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .step-list,
+      .grid,
+      .grid.three {
+        grid-template-columns: 1fr;
+      }
+
+      .nav {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .nav-links {
+        flex-wrap: wrap;
+      }
+
+      table {
+        display: block;
+        max-width: 100%;
+        overflow-x: auto;
+      }
+
+      .table-scroll {
+        max-width: 100%;
+      }
+
+    }
+
+    @media (max-width: 640px) {
+      main {
+        padding: 26px 14px 56px;
+      }
+
+      .section {
+        padding: 22px;
+      }
+
+      .hero-copy {
+        padding: 0;
+      }
+
+      .lead {
+        font-size: 16px;
+        line-height: 1.55;
+      }
+
+      .hero-note {
+        margin-top: 12px;
+        padding: 12px 14px;
+      }
+
+      .copy-block {
+        padding: 20px;
+      }
+
+      .copy-text-block {
+        padding: 16px 16px 58px;
+      }
+
+      .hero-topbar {
+        align-items: flex-start;
+      }
+
+      .copy-actions {
+        right: 14px;
+        bottom: 14px;
+      }
+
+      .copy-button {
+        width: 34px;
+      }
+
+      .metrics {
+        grid-template-columns: 1fr;
+      }
+    }
+  
+    :root { --topbar-height: 68px; --sidebar-width: 284px; }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: calc(var(--topbar-height) + 24px); overflow-x: hidden; }
+    body { margin: 0; min-width: 320px; overflow-x: hidden; }
+    body.nav-open { overflow: hidden; }
+    .app-header {
+      position: fixed; inset: 0 0 auto 0; z-index: 1000; height: var(--topbar-height);
+      display: flex; align-items: center; justify-content: space-between; gap: 20px;
+      padding: 0 28px; border-bottom: 1px solid var(--line);
+      background: rgba(247, 251, 255, .96); backdrop-filter: blur(16px);
+    }
+    .app-brand { display:flex; align-items:center; gap:12px; min-width:0; color:var(--ink); font-weight:800; font-size:18px; }
+    .app-brand .brand-mark { width:34px; height:34px; flex:0 0 34px; border-radius:8px; display:grid; place-items:center; color:#fff; background:var(--blue); box-shadow:0 8px 18px rgba(0,105,255,.18); }
+    .header-actions { display:flex; align-items:center; gap:10px; }
+    .language-switch { display:flex; padding:3px; border:1px solid var(--line); border-radius:9px; background:var(--white); }
+    .language-button { border:0; border-radius:6px; padding:8px 14px; color:var(--muted); background:transparent; font:inherit; font-size:14px; font-weight:700; cursor:pointer; }
+    .language-button:hover { color:var(--blue-dark); background:var(--soft); }
+    .language-button[aria-pressed="true"] { color:#fff; background:var(--blue); }
+    .menu-button { display:none; width:40px; height:40px; border:1px solid var(--line); border-radius:9px; background:#fff; color:var(--ink); cursor:pointer; }
+    .menu-button svg { width:21px; height:21px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; }
+    .layout { min-height:100vh; padding-top:var(--topbar-height); }
+    .doc-sidebar {
+      position:fixed; z-index:900; top:var(--topbar-height); bottom:0; left:0; width:var(--sidebar-width);
+      overflow-y:auto; padding:28px 20px 40px; border-right:1px solid var(--line); background:rgba(247,251,255,.98);
+    }
+    .sidebar-group + .sidebar-group { margin-top:30px; padding-top:26px; border-top:1px solid var(--line); }
+    .sidebar-title { margin:0 10px 10px; color:var(--ink); font-size:13px; line-height:1.4; font-weight:800; letter-spacing:.04em; text-transform:uppercase; }
+    .sidebar-nav { display:grid; gap:3px; }
+    .sidebar-link { position:relative; display:block; padding:9px 12px; border-radius:7px; color:var(--muted); text-decoration:none; font-size:14px; line-height:1.4; font-weight:650; transition:background .16s ease,color .16s ease; }
+    .sidebar-link:hover { color:var(--blue-dark); background:var(--soft); }
+    .sidebar-link.active { color:var(--blue); background:var(--blue-soft); }
+    .sidebar-link.active::before { content:""; position:absolute; left:-20px; top:7px; bottom:7px; width:3px; border-radius:0 3px 3px 0; background:var(--blue); }
+    .doc-main { margin-left:var(--sidebar-width); min-width:0; }
+    .language-document { display:block; width:min(100%, 1120px); margin:0 auto; padding:54px 54px 80px; }
+    .language-document[hidden] { display:none !important; }
+    .language-document main { width:100%; }
+    .language-document .hero { min-height:0; margin:0 0 28px; padding:0 0 38px; background:none; border-bottom:1px solid var(--line); }
+    .language-document .hero::before, .language-document .hero::after { display:none; }
+    .language-document .hero-copy { width:100%; }
+    .language-document .hero-topbar { margin-bottom:16px; }
+    .language-document .eyebrow { color:var(--blue); background:transparent; border:0; padding:0; font-size:14px; letter-spacing:0; }
+    .language-document .hero-title { max-width:900px; margin:0 0 20px; font-size:clamp(38px,4.2vw,58px); line-height:1.08; letter-spacing:-.035em; }
+    .language-document .lead { max-width:900px; font-size:18px; line-height:1.78; }
+    .language-document .section { margin:0; padding:38px 0; border:0; border-bottom:1px solid var(--line); border-radius:0; background:transparent; box-shadow:none; scroll-margin-top:calc(var(--topbar-height) + 22px); }
+    .language-document .section.dark { margin-inline:-24px; padding:38px 24px; border-radius:14px; border-bottom:0; background:var(--black); }
+    .language-document .section + .section { margin-top:0; }
+    .language-document .section h2 { font-size:30px; letter-spacing:-.02em; }
+    .language-document .section h3 { margin-top:30px; }
+    .language-document .grid { gap:16px; }
+    .language-document .tile { border-radius:10px; box-shadow:none; }
+    .language-document pre { max-width:100%; overflow:auto; border-radius:10px; }
+    .language-document table { min-width:640px; }
+    .language-document .table-scroll { max-width:100%; overflow-x:auto; }
+    .language-document img { max-width:100%; height:auto; }
+    .language-document .footer-note { margin-top:40px; }
+    .drawer-backdrop { display:none; position:fixed; z-index:850; inset:var(--topbar-height) 0 0; background:rgba(6,17,31,.42); }
+    @media (max-width: 980px) {
+      :root { --sidebar-width:260px; }
+      .language-document { padding-inline:34px; }
+      .language-document .hero-title { font-size:42px; }
+    }
+    @media (max-width: 760px) {
+      :root { --topbar-height:62px; }
+      .app-header { padding:0 16px; }
+      .app-brand { font-size:16px; }
+      .app-brand .brand-mark { width:30px; height:30px; flex-basis:30px; border-radius:7px; }
+      .menu-button { display:grid; place-items:center; }
+      .language-button { padding:7px 10px; }
+      .doc-sidebar { transform:translateX(-100%); width:min(84vw,300px); transition:transform .22s ease; box-shadow:18px 0 40px rgba(6,17,31,.12); }
+      body.nav-open .doc-sidebar { transform:translateX(0); }
+      body.nav-open .drawer-backdrop { display:block; }
+      .doc-main { margin-left:0; }
+      .language-document { padding:34px 20px 64px; }
+      .language-document .hero { padding-bottom:30px; }
+      .language-document .hero-title { font-size:clamp(34px,10vw,44px); }
+      .language-document .lead { font-size:16px; }
+      .language-document .section { padding:30px 0; }
+      .language-document .section.dark { margin-inline:-10px; padding:30px 14px; border-radius:12px; }
+      .language-document .section h2 { font-size:26px; }
+      .language-document .grid, .language-document .grid.three, .language-document .metrics { grid-template-columns:1fr; }
+      .language-document table { min-width:620px; }
+      .language-document .copy-actions { position:static; margin:12px 0 0; }
+    }
+    @media (max-width: 480px) {
+      .app-brand > span:last-child { display:none; }
+      .header-actions { gap:7px; }
+      .language-button { padding-inline:9px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior:auto; }
+      *, *::before, *::after { transition-duration:.01ms !important; animation-duration:.01ms !important; animation-iteration-count:1 !important; }
+    }
+
+  
+    .app-brand { text-decoration:none; }
+    .language-button { display:inline-flex; align-items:center; justify-content:center; text-decoration:none; }
+</style>
+</head>
+<body>
+  <header class="app-header">
+    <a class="app-brand" href="bitgo-product-overview-zh-v2.html" aria-label="bitgo 产品文档首页"><span class="brand-mark" aria-hidden="true">b</span><span>bitgo Product Docs</span></a>
+    <div class="header-actions">
+      <div class="language-switch" role="group" aria-label="Language / 语言">
+        <a class="language-button" href="bitgo-model-inference-api-zh-v2.html" aria-current="page" aria-pressed="true">中文</a>
+        <a class="language-button" href="bitgo-model-inference-api-en-v2.html"  aria-pressed="false">English</a>
+      </div>
+      <button class="menu-button" id="menu-button" type="button" aria-controls="doc-sidebar" aria-expanded="false" aria-label="打开文档目录"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg></button>
+    </div>
+  </header>
+  <div class="layout">
+    <aside class="doc-sidebar" id="doc-sidebar" aria-label="文档目录"><div class="sidebar-group"><h2 class="sidebar-title">产品概览</h2><nav class="sidebar-nav" aria-label="产品概览"><a class="sidebar-link" href="bitgo-product-overview-zh-v2.html#zh-why-bitgo" data-section="why-bitgo" data-category="overview">为什么 bitgo？</a><a class="sidebar-link" href="bitgo-product-overview-zh-v2.html#zh-overview" data-section="overview" data-category="overview">产品概览</a><a class="sidebar-link" href="bitgo-product-overview-zh-v2.html#zh-workflow" data-section="workflow" data-category="overview">使用流程</a><a class="sidebar-link" href="bitgo-product-overview-zh-v2.html#zh-system-prompt" data-section="system-prompt" data-category="overview">系统提示词</a><a class="sidebar-link" href="bitgo-product-overview-zh-v2.html#zh-wallet-prep" data-section="wallet-prep" data-category="overview">充值与钱包</a><a class="sidebar-link" href="bitgo-product-overview-zh-v2.html#zh-signing-auth" data-section="signing-auth" data-category="overview">签名认证</a></nav></div><div class="sidebar-group"><h2 class="sidebar-title">大模型推理 API</h2><nav class="sidebar-nav" aria-label="大模型推理 API"><a class="sidebar-link" href="#zh-api-call" data-section="api-call" data-category="api">推理 API 调用</a><a class="sidebar-link" href="#zh-model-pricing" data-section="model-pricing" data-category="api">模型价格</a><a class="sidebar-link" href="#zh-security" data-section="security" data-category="api">安全事项</a><a class="sidebar-link" href="#zh-appendix" data-section="appendix" data-category="api">附录</a></nav></div></aside>
+    <div class="drawer-backdrop" id="drawer-backdrop"></div>
+    <div class="doc-main"><article class="language-document" data-language-document="zh"><section class="section" id="zh-api-call">
+        <h2>推理API调用</h2>
+        <p>agent 或软件将任务上下文写入 <code>messages</code>，选择模型后发送到推理 API。请求体采用 Anthropic Messages 风格。</p>
+        <table>
+          <thead><tr><th>项目</th><th>值</th><th>说明</th></tr></thead>
+          <tbody>
+            <tr><td><code>endpoint</code></td><td><code>https://api-bitgo.enigmhaven.com/v1/messages</code></td><td>推理 API 请求地址</td></tr>
+            <tr><td><code>method</code></td><td><code>POST</code></td><td>发送 JSON 请求体</td></tr>
+            <tr><td><code>Content-Type</code></td><td><code>application/json</code></td><td>固定使用 JSON</td></tr>
+            <tr><td><code>X-Params</code></td><td><code>BASE64_ENCODED_WALLET_PARAMS</code></td><td>钱包业务签名认证参数</td></tr>
+            <tr><td><code>X-Nonce</code></td><td><code>RANDOM_NONCE</code></td><td>随机字符串，参与接口级 ECDSA 签名</td></tr>
+            <tr><td><code>X-Signature</code></td><td><code>ECDSA_SIGNATURE_HEX</code></td><td>对 <code>X-Params + X-Nonce</code> 签名后的 ASN.1/DER hex</td></tr>
+            <tr><td><code>X-Public-Key</code></td><td><code>ECDSA_PUBLIC_KEY</code></td><td>本地 ECDSA 公钥，用于服务端验签</td></tr>
+          </tbody>
+        </table>
+        <h3>短请求示例</h3>
+        <pre><code class="language-json">{
+  &quot;model&quot;: &quot;claude-4.6-opus&quot;,
+  &quot;max_tokens&quot;: 1024,
+  &quot;stream&quot;: false,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;根据软件当前业务上下文执行一次大模型推理任务。&quot;
+    }
+  ]
+}</code></pre>
+        <h3>短响应结构</h3>
+        <pre><code class="language-json">{
+  &quot;status&quot;: 200,
+  &quot;body&quot;: {
+    &quot;content&quot;: [{ &quot;type&quot;: &quot;text&quot;, &quot;text&quot;: &quot;模型返回内容...&quot; }],
+    &quot;model&quot;: &quot;claude-4.6-opus&quot;,
+    &quot;role&quot;: &quot;assistant&quot;,
+    &quot;stop_reason&quot;: &quot;end_turn&quot;,
+    &quot;usage&quot;: {
+      &quot;input_tokens&quot;: 23,
+      &quot;output_tokens&quot;: 956,
+      &quot;input_token_unit_price&quot;: 500,
+      &quot;output_token_unit_price&quot;: 2520,
+      &quot;consume_amount&quot;: 2420620,
+      &quot;balance&quot;: 493482537,
+      &quot;hash&quot;: &quot;...&quot;
+    }
+  }
+}</code></pre>
+        <h3>usage 字段说明</h3>
+        <ul>
+          <li><code>input_token_unit_price</code> 和 <code>output_token_unit_price</code> 的实际价格为字段值乘以 <code>10^-5</code>，单位价格表示每 1000 tokens 的价格。</li>
+          <li><code>consume_amount</code> 的实际消费金额为字段值乘以 <code>10^-8</code>。</li>
+          <li><code>balance</code> 的实际余额为字段值乘以 <code>10^-8</code>。</li>
+          <li>如果服务端响应没有 <code>usage</code> 字段，CLI 应输出 <code>&quot;usage&quot;: null</code>，不要估算或编造。</li>
+        </ul>
+        <h3>bitgo零钱包消费记录查询</h3>
+        <p>模型或 API 消费完成后，可以用 BFF bitgo零钱包接口查询指定 <code>money_id</code> 的消费订单。查询前必须确认同一币种、同一 <code>wallet_address</code>、授权金额 <code>money</code> 和 <code>money_id</code>；<code>money_id</code> 在 BFF 响应中对应 <code>subId</code>。</p>
+        <table>
+          <thead><tr><th>项目</th><th>值</th><th>说明</th></tr></thead>
+          <tbody>
+            <tr><td><code>endpoint</code></td><td><code>https://bitgo.enigmhaven.com/api/bff/v1/sub-wallet/orders</code></td><td>查询 bitgo零钱包消费订单。</td></tr>
+            <tr><td><code>method</code></td><td><code>GET</code></td><td>支持 <code>page</code> 和 <code>page_size</code> 分页参数。</td></tr>
+            <tr><td><code>X-Params</code></td><td><code>BASE64_ENCODED_TIER2_X_PARAMS</code></td><td>Tier2 bitgo零钱包签名参数，只在运行时生成和传输。</td></tr>
+          </tbody>
+        </table>
+        <p>Tier2 签名消息为：</p>
+        <pre><code>${wallet_address}${money}${money_id}</code></pre>
+        <p><code>X-Params</code> 解码后的 JSON 结构为：</p>
+        <pre><code class="language-json">{
+  &quot;wallet_address&quot;: &quot;YOUR_WALLET_ADDRESS&quot;,
+  &quot;money&quot;: &quot;YOUR_WALLET_MONEY&quot;,
+  &quot;money_id&quot;: &quot;YOUR_MONEY_ID&quot;,
+  &quot;signature&quot;: &quot;BASE64_WALLET_SIGNATURE&quot;
+}</code></pre>
+        <pre><code>curl -X GET &quot;https://bitgo.enigmhaven.com/api/bff/v1/sub-wallet/orders?page=1&amp;page_size=20&quot; \
+  -H &quot;X-Params: BASE64_ENCODED_TIER2_X_PARAMS&quot;</code></pre>
+        <pre><code class="language-json">{
+  &quot;orders&quot;: [
+    {
+      &quot;orderId&quot;: &quot;ORDER_ID_REDACTED_1&quot;,
+      &quot;accountId&quot;: &quot;ACCOUNT_ID_REDACTED&quot;,
+      &quot;subId&quot;: &quot;money_20260710_REDACTED&quot;,
+      &quot;category&quot;: &quot;TOKEN&quot;,
+      &quot;type&quot;: &quot;deduct&quot;,
+      &quot;amount&quot;: &quot;0.01377900&quot;,
+      &quot;refOrderId&quot;: &quot;&quot;,
+      &quot;description&quot;: &quot;model: claude-4.6-opus; input_token: 1017; output_token: 345&quot;,
+      &quot;createdAt&quot;: &quot;2026-07-10T03:32:13.465Z&quot;,
+      &quot;userId&quot;: &quot;USER_ID_REDACTED_1&quot;
+    },
+    {
+      &quot;orderId&quot;: &quot;ORDER_ID_REDACTED_2&quot;,
+      &quot;accountId&quot;: &quot;ACCOUNT_ID_REDACTED&quot;,
+      &quot;subId&quot;: &quot;money_20260710_REDACTED&quot;,
+      &quot;category&quot;: &quot;TOKEN&quot;,
+      &quot;type&quot;: &quot;deduct&quot;,
+      &quot;amount&quot;: &quot;0.01362780&quot;,
+      &quot;refOrderId&quot;: &quot;&quot;,
+      &quot;description&quot;: &quot;model: claude-4.6-opus; input_token: 1017; output_token: 339&quot;,
+      &quot;createdAt&quot;: &quot;2026-07-10T03:31:21.512Z&quot;,
+      &quot;userId&quot;: &quot;USER_ID_REDACTED_2&quot;
+    }
+  ],
+  &quot;total&quot;: 2
+}</code></pre>
+        <p class="callout">如果接口返回 <code>orders: []</code> 且 <code>total: 0</code>，表示该 bitgo零钱包当前没有消费记录。日志和文档只能展示 <code>wallet_address</code>、<code>money</code>、<code>money_id</code>、接口 URL、订单列表和 <code>total</code> 等业务字段；<code>orderId</code>、<code>accountId</code>、<code>subId</code>、<code>userId</code>、签名字段和其他身份标识应按场景脱敏。不要记录私钥、完整签名、完整 <code>X-Params</code>、<code>X-Signature</code> 或 <code>X-Public-Key</code>。</p>
+      </section>
+<section class="section dark" id="zh-model-pricing">
+        <h2>模型价格</h2>
+        <p>通过请求体中的 <code>model</code> 字段选择模型。主流程建议按质量、速度和成本选择常用模型；完整模型价格表见附录。</p>
+        <div class="grid">
+          <div class="tile"><strong>低成本</strong><span><code>openai/gpt-5-nano</code>、<code>deepseek/deepseek-v4-flash</code>，适合批量分类、摘要和轻量判断。</span></div>
+          <div class="tile"><strong>高质量</strong><span><code>claude-4.6-opus</code>、<code>anthropic/claude-4.8-opus</code>，适合复杂推理、长文分析和高质量生成。</span></div>
+          <div class="tile"><strong>代码 / 复杂推理</strong><span><code>openai/gpt-5.2-codex</code>、<code>openai/gpt-5.3-codex</code>，适合软件开发、代码审查和工程任务。</span></div>
+          <div class="tile"><strong>快速响应</strong><span><code>claude-4.5-haiku</code>、<code>minimax/minimax-m2.5-highspeed</code>，适合交互式 agent 和低延迟业务流程。</span></div>
+        </div>
+      </section>
+<section class="section dark" id="zh-security">
+        <h2>安全事项</h2>
+        <ul>
+          <li>不要将真实私钥、完整 <code>X-Params</code>、完整 <code>X-Signature</code>、<code>X-Public-Key</code> 或管理 token 写入仓库。</li>
+          <li>链类型、充值网络和金额必须由人确认；<code>money_id</code> 由 agent 自动生成，不要求用户手动提供。</li>
+          <li>私钥应通过环境变量、Secret 管理器或部署平台安全注入，不应出现在配置模板中。</li>
+          <li>充值前必须核对官方接收地址和主网，转错地址或转错网络无法由 agent 或软件自动挽回。</li>
+          <li>软件内部调用推理 API 时，应记录 <code>usage</code>，但不要记录敏感 header 或私钥材料。</li>
+          <li>示例中的 nonce、签名、余额、hash 和 token 数都会随每次调用变化，不应作为固定值写入业务逻辑。</li>
+        </ul>
+      </section>
+<section class="section" id="zh-appendix">
+        <h2>附录</h2>
+        <h3>完整模型表</h3>
+        <p>单价按 USD / 1,000,000 token 展示。</p>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>模型 ID</th><th>模型名称</th><th>发行商</th><th>输入单价</th><th>输出单价</th></tr></thead>
+            <tbody>
+              <tr><td><code>deepseek-v3</code></td><td>DeepSeek-V3</td><td>DeepSeek</td><td>0.28</td><td>1.11</td></tr>
+              <tr><td><code>deepseek-v3.1</code></td><td>DeepSeek-V3.1</td><td>DeepSeek</td><td>0.56</td><td>1.67</td></tr>
+              <tr><td><code>deepseek/deepseek-v4-flash</code></td><td>DeepSeek-V4-Flash</td><td>DeepSeek</td><td>0.14</td><td>0.28</td></tr>
+              <tr><td><code>deepseek/deepseek-v4-pro</code></td><td>DeepSeek-V4-Pro</td><td>DeepSeek</td><td>1.67</td><td>3.33</td></tr>
+              <tr><td><code>deepseek/deepseek-v3.2-exp</code></td><td>DeepSeek/DeepSeek-V3.2-Exp</td><td>DeepSeek</td><td>0.28</td><td>0.42</td></tr>
+              <tr><td><code>deepseek/deepseek-v3.2-exp-thinking</code></td><td>DeepSeek/DeepSeek-V3.2-Exp-Thinking</td><td>DeepSeek</td><td>0.28</td><td>0.42</td></tr>
+              <tr><td><code>deepseek/deepseek-v3.2-251201</code></td><td>Deepseek/DeepSeek-V3.2</td><td>DeepSeek</td><td>0.28</td><td>0.42</td></tr>
+              <tr><td><code>claude-4.1-opus</code></td><td>Claude 4.1 Opus</td><td>Anthropic</td><td>15</td><td>75.6</td></tr>
+              <tr><td><code>claude-4.5-haiku</code></td><td>Claude 4.5 Haiku</td><td>Anthropic</td><td>5</td><td>5.04</td></tr>
+              <tr><td><code>claude-4.5-opus</code></td><td>Claude 4.5 Opus</td><td>Anthropic</td><td>5</td><td>25.2</td></tr>
+              <tr><td><code>claude-4.5-sonnet</code></td><td>Claude 4.5 Sonnet</td><td>Anthropic</td><td>3</td><td>15.12</td></tr>
+              <tr><td><code>claude-4.6-opus</code></td><td>Claude 4.6 Opus</td><td>Anthropic</td><td>5</td><td>25.2</td></tr>
+              <tr><td><code>claude-4.6-sonnet</code></td><td>Claude 4.6 Sonnet</td><td>Anthropic</td><td>3</td><td>15.12</td></tr>
+              <tr><td><code>anthropic/claude-4.7-opus</code></td><td>Claude 4.7 Opus</td><td>Anthropic</td><td>5</td><td>25.2</td></tr>
+              <tr><td><code>anthropic/claude-4.8-opus</code></td><td>Claude 4.8 Opus</td><td>Anthropic</td><td>5</td><td>25.2</td></tr>
+              <tr><td><code>MiniMax-M1</code></td><td>MiniMax M1</td><td>Minimax</td><td>0.56</td><td>2.22</td></tr>
+              <tr><td><code>minimax/minimax-m2.5</code></td><td>Minimax/Minimax-M2.5</td><td>Minimax</td><td>0.29</td><td>1.17</td></tr>
+              <tr><td><code>minimax/minimax-m2.5-highspeed</code></td><td>Minimax/Minimax-M2.5 Highspeed</td><td>Minimax</td><td>0.58</td><td>2.33</td></tr>
+              <tr><td><code>minimax/minimax-m2.7</code></td><td>Minimax/Minimax-M2.7</td><td>Minimax</td><td>0.29</td><td>1.17</td></tr>
+              <tr><td><code>minimax/minimax-m3</code></td><td>Minimax/Minimax-M3</td><td>Minimax</td><td>0.29</td><td>11.67</td></tr>
+              <tr><td><code>openai/gpt-5</code></td><td>OpenAI/GPT-5</td><td>OpenAI</td><td>1.26</td><td>10.08</td></tr>
+              <tr><td><code>openai/gpt-5-nano</code></td><td>OpenAI/GPT-5 Nano</td><td>OpenAI</td><td>0.0504</td><td>0.4032</td></tr>
+              <tr><td><code>openai/gpt-5.2</code></td><td>OpenAI/GPT-5.2</td><td>OpenAI</td><td>1.764</td><td>14.112</td></tr>
+              <tr><td><code>openai/gpt-5-mini</code></td><td>Openai/GPT-5 Mini</td><td>OpenAI</td><td>0.252</td><td>2.016</td></tr>
+              <tr><td><code>openai/gpt-5-pro</code></td><td>Openai/GPT-5 Pro</td><td>OpenAI</td><td>15.12</td><td>120.96</td></tr>
+              <tr><td><code>openai/gpt-5.2-codex</code></td><td>Openai/GPT-5.2 Codex</td><td>OpenAI</td><td>1.764</td><td>14.112</td></tr>
+              <tr><td><code>openai/gpt-5.3-codex</code></td><td>Openai/GPT-5.3 Codex</td><td>OpenAI</td><td>1.764</td><td>14.112</td></tr>
+              <tr><td><code>openai/gpt-5.4</code></td><td>Openai/GPT-5.4</td><td>OpenAI</td><td>2.52</td><td>15.12</td></tr>
+              <tr><td><code>openai/gpt-5.4-mini</code></td><td>Openai/GPT-5.4 Mini</td><td>OpenAI</td><td>0.756</td><td>4.536</td></tr>
+              <tr><td><code>openai/gpt-5.4-nano</code></td><td>Openai/GPT-5.4 Nano</td><td>OpenAI</td><td>0.2016</td><td>1.26</td></tr>
+              <tr><td><code>openai/gpt-5.4-pro</code></td><td>Openai/GPT-5.4 Pro</td><td>OpenAI</td><td>30.24</td><td>181.44</td></tr>
+              <tr><td><code>openai/gpt-5.5</code></td><td>Openai/GPT-5.5</td><td>OpenAI</td><td>5.04</td><td>30.24</td></tr>
+              <tr><td><code>moonshotai/kimi-k2.5</code></td><td>Moonshotai/Kimi-K2.5</td><td>Moonshot-Kimi</td><td>0.56</td><td>2.92</td></tr>
+              <tr><td><code>moonshotai/kimi-k2.6</code></td><td>Moonshotai/Kimi-K2.6</td><td>Moonshot-Kimi</td><td>0.9</td><td>3.75</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>完整 BTC 请求样例</h3>
+        <pre><code class="language-json">{
+  &quot;method&quot;: &quot;POST&quot;,
+  &quot;url&quot;: &quot;https://api-bitgo.enigmhaven.com/v1/messages&quot;,
+  &quot;headers&quot;: {
+    &quot;Content-Type&quot;: &quot;application/json&quot;,
+    &quot;X-Params&quot;: &quot;BASE64_ENCODED_WALLET_PARAMS&quot;,
+    &quot;X-Nonce&quot;: &quot;RANDOM_NONCE&quot;,
+    &quot;X-Signature&quot;: &quot;ECDSA_SIGNATURE_HEX&quot;,
+    &quot;X-Public-Key&quot;: &quot;ECDSA_PUBLIC_KEY&quot;
+  },
+  &quot;body&quot;: {
+    &quot;model&quot;: &quot;claude-4.6-opus&quot;,
+    &quot;stream&quot;: false,
+    &quot;messages&quot;: [
+      {
+        &quot;role&quot;: &quot;user&quot;,
+        &quot;content&quot;: &quot;提供 github 上 5 个最热门的 AI 开源项目&quot;
+      }
+    ]
+  }
+}</code></pre>
+        <h3>完整 BTC 响应样例</h3>
+        <pre><code class="language-json">{
+  &quot;status&quot;: 200,
+  &quot;body&quot;: {
+    &quot;content&quot;: [
+      {
+        &quot;type&quot;: &quot;text&quot;,
+        &quot;text&quot;: &quot;返回 5 个热门 AI 开源项目的结构化摘要。&quot;
+      }
+    ],
+    &quot;id&quot;: &quot;msg_c0cd43018acb49e99a3cfe19dfdfe7e4&quot;,
+    &quot;model&quot;: &quot;claude-4.6-opus&quot;,
+    &quot;role&quot;: &quot;assistant&quot;,
+    &quot;stop_reason&quot;: &quot;end_turn&quot;,
+    &quot;type&quot;: &quot;message&quot;,
+    &quot;usage&quot;: {
+      &quot;balance&quot;: 493482537,
+      &quot;cache_creation&quot;: {
+        &quot;ephemeral_1h_input_tokens&quot;: 0,
+        &quot;ephemeral_5m_input_tokens&quot;: 0
+      },
+      &quot;cache_creation_input_tokens&quot;: 0,
+      &quot;cache_read_input_tokens&quot;: 0,
+      &quot;consume_amount&quot;: 2420620,
+      &quot;hash&quot;: &quot;MzA0NTAyMjEwMGY5MjlkZDE0MzNhYTkxZTYzNzVmN2RlOGU0YjQ3MzkzN2QwMDU4NWViOGI2ZjUyNDUwYTdkMjVlNmY4OGQ2MWEwMjIwNTM5ZTdhMjAxNmEzNGRiMmQxZDc4OGI0YmRhZjQ2YjM3NmUyZjAxNmRkNmE3MTc0YjE3NTIyOGFlM2FiZDYzMg==&quot;,
+      &quot;input_token_unit_price&quot;: 500,
+      &quot;input_tokens&quot;: 23,
+      &quot;output_token_unit_price&quot;: 2520,
+      &quot;output_tokens&quot;: 956
+    }
+  }
+}</code></pre>
+        <h3>curl 连通性测试</h3>
+        <pre><code>curl -X POST &quot;https://api-bitgo.enigmhaven.com/v1/messages&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;X-Params: BASE64_ENCODED_WALLET_PARAMS&quot; \
+  -H &quot;X-Nonce: RANDOM_NONCE&quot; \
+  -H &quot;X-Signature: ECDSA_SIGNATURE_HEX&quot; \
+  -H &quot;X-Public-Key: ECDSA_PUBLIC_KEY&quot; \
+  --data-raw '{
+    &quot;model&quot;: &quot;claude-4.6-opus&quot;,
+    &quot;max_tokens&quot;: 1024,
+    &quot;stream&quot;: false,
+    &quot;messages&quot;: [{ &quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;你好&quot; }]
+  }'</code></pre>
+        <h3>字段字典</h3>
+        <table class="field-dictionary">
+          <thead><tr><th>字段</th><th>说明</th></tr></thead>
+          <tbody>
+            <tr><td><code>wallet_chain</code></td><td>链类型，当前使用 <code>eth</code>、<code>ltc</code> 或 <code>btc</code>。</td></tr>
+            <tr><td><code>wallet_address</code></td><td>链上地址，作为用户和钱包记录的关键 ID。</td></tr>
+            <tr><td><code>money</code></td><td>人确认的金额或面额。</td></tr>
+            <tr><td><code>money_id</code></td><td>agent 自动生成的金额记录或钱包记录 ID，格式类似 <code>money_20260707_a8f3c91b2e4d</code>。生成一个新的随机 <code>money_id</code>，意味着一个新的 bitgo 零钱包。</td></tr>
+            <tr><td><code>signature</code></td><td>对 <code>wallet_address + money + money_id</code> 签名后的 base64 字符串。</td></tr>
+            <tr><td><code>X-Params</code></td><td>钱包参数 JSON 再次 base64 后的 header 值。</td></tr>
+            <tr><td><code>X-Nonce</code></td><td>参与接口级签名的随机字符串。</td></tr>
+            <tr><td><code>X-Signature</code></td><td>将 <code>X-Params + X-Nonce</code> 严格按顺序拼接并计算 SHA-256，再使用本地 ECDSA 私钥调用 <code>ecdsa.SignASN1</code> 对摘要生成 ASN.1/DER 签名字节，最后进行 HEX 编码。</td></tr>
+            <tr><td><code>X-Public-Key</code></td><td>用于服务端验签的本地 ECDSA 公钥。</td></tr>
+            <tr><td><code>usage</code></td><td>服务端返回的 token 用量、单价、消费金额、余额和 hash。</td></tr>
+          </tbody>
+        </table>
+      </section>
+<p class="footer-note">bitgo optimized product guide for agent software development and software-embedded reasoning workloads.</p></article></div>
+  </div>
+<script>
+  (function () {
+    "use strict";
+    var body=document.body, sidebar=document.getElementById("doc-sidebar"), menuButton=document.getElementById("menu-button"), backdrop=document.getElementById("drawer-backdrop");
+    var copyResetTimers=new WeakMap(), currentSection="api-call", observer;
+    function setActiveLink(section){sidebar.querySelectorAll('.sidebar-link[data-category="api"]').forEach(function(link){var active=link.dataset.section===section;link.classList.toggle("active",active);if(active)link.setAttribute("aria-current","location");else link.removeAttribute("aria-current");});}
+    function observeSections(){if(!("IntersectionObserver" in window))return;observer=new IntersectionObserver(function(entries){var visible=entries.filter(function(entry){return entry.isIntersecting;}).sort(function(a,b){return a.boundingClientRect.top-b.boundingClientRect.top;});if(visible.length){currentSection=visible[0].target.id.replace("zh-","");setActiveLink(currentSection);}},{rootMargin:"-90px 0px -70% 0px",threshold:[0,.01]});document.querySelectorAll('#zh-api-call, .section[id]').forEach(function(section){observer.observe(section);});}
+    function closeDrawer(){body.classList.remove("nav-open");menuButton.setAttribute("aria-expanded","false");}
+    function setCopyState(button,status,label,statusText,state){var defaultLabel=button.dataset.copyDefaultLabel||button.getAttribute("aria-label")||"Copy";button.dataset.copyDefaultLabel=defaultLabel;button.setAttribute("aria-label",label);button.setAttribute("title",label);button.dataset.state=state||"";if(status)status.textContent=statusText||"";window.clearTimeout(copyResetTimers.get(button));copyResetTimers.set(button,window.setTimeout(function(){button.setAttribute("aria-label",defaultLabel);button.setAttribute("title",defaultLabel);button.dataset.state="";if(status)status.textContent="";},2200));}
+    function fallbackCopy(text){var textarea=document.createElement("textarea");textarea.value=text;textarea.setAttribute("readonly","");textarea.style.cssText="position:fixed;left:-9999px;top:0;opacity:0";document.body.appendChild(textarea);textarea.select();var copied=false;try{copied=document.execCommand("copy");}catch(error){}document.body.removeChild(textarea);return copied;}
+    document.addEventListener("click",function(event){var navLink=event.target.closest(".sidebar-link");if(navLink&&navLink.dataset.category==="api"){currentSection=navLink.dataset.section;setActiveLink(currentSection);closeDrawer();}var copyButton=event.target.closest("[data-copy-target]");if(!copyButton)return;var target=document.getElementById(copyButton.dataset.copyTarget),text=target?target.textContent.trim():"",status=document.getElementById(copyButton.getAttribute("aria-describedby"));if(!text){setCopyState(copyButton,status,"复制失败，请手动复制","未找到可复制内容。","error");return;}var success=function(){setCopyState(copyButton,status,"已复制",copyButton.dataset.copySuccessText||"已复制。","success");};if(fallbackCopy(text)){success();return;}if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(success).catch(function(){setCopyState(copyButton,status,"复制失败，请手动复制","浏览器阻止了复制操作。","error");});}});
+    menuButton.addEventListener("click",function(){var open=!body.classList.contains("nav-open");body.classList.toggle("nav-open",open);menuButton.setAttribute("aria-expanded",open?"true":"false");});
+    backdrop.addEventListener("click",closeDrawer);document.addEventListener("keydown",function(event){if(event.key==="Escape")closeDrawer();});window.addEventListener("resize",function(){if(window.innerWidth>760)closeDrawer();});setActiveLink(currentSection);observeSections();
+  }());
+  </script>
+</body>
+</html>
