@@ -879,6 +879,7 @@
     .language-document .copy-text-wrap { width:100%; max-width:none; }
     .language-document .lead { max-width:none; font-size:18px; line-height:1.78; }
     .language-document .section { margin:0; padding:38px 0; border:0; border-bottom:1px solid var(--line); border-radius:0; background:transparent; box-shadow:none; scroll-margin-top:calc(var(--topbar-height) + 22px); }
+    .language-document #zh-system-prompt { border-bottom:0; }
     .language-document .section.dark { margin-inline:-24px; padding:38px 24px; border-radius:14px; border-bottom:0; background:var(--black); }
     .language-document .section + .section { margin-top:0; }
     .language-document .section h2 { font-size:30px; letter-spacing:-.02em; }
@@ -886,7 +887,12 @@
     .language-document .grid { gap:16px; }
     .language-document .tile { border-radius:10px; box-shadow:none; }
     .language-document pre { max-width:100%; overflow:auto; border-radius:10px; }
-    .language-document table { min-width:640px; }
+    .language-document table { width:100%; min-width:0; table-layout:fixed; }
+    .language-document th,
+    .language-document td,
+    .language-document th:nth-child(-n + 2),
+    .language-document td:nth-child(-n + 2),
+    .language-document td:nth-child(-n + 2) code { white-space:normal; overflow-wrap:anywhere; word-break:break-word; }
     .language-document .table-scroll { max-width:100%; overflow-x:auto; }
     .language-document img { max-width:100%; height:auto; }
     .language-document .footer-note { margin-top:40px; }
@@ -915,7 +921,7 @@
       .language-document .section.dark { margin-inline:-10px; padding:30px 14px; border-radius:12px; }
       .language-document .section h2 { font-size:26px; }
       .language-document .grid, .language-document .grid.three, .language-document .metrics { grid-template-columns:1fr; }
-      .language-document table { min-width:620px; }
+      .language-document table { min-width:0; }
       .language-document .copy-text-block { padding:16px 16px 58px; }
       .language-document .copy-actions { right:14px; bottom:14px; }
     }
