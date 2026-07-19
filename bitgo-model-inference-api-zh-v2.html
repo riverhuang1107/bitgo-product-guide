@@ -1051,7 +1051,7 @@
 }</code></pre>
         <p class="callout">如果接口返回 <code>orders: []</code> 且 <code>total: 0</code>，表示该 bitgo零钱包当前没有消费记录。日志和文档只能展示 <code>wallet_address</code>、<code>money</code>、<code>money_id</code>、接口 URL、订单列表和 <code>total</code> 等业务字段；<code>orderId</code>、<code>accountId</code>、<code>subId</code>、<code>userId</code>、签名字段和其他身份标识应按场景脱敏。不要记录私钥、完整签名、完整 <code>X-Params</code>、<code>X-Signature</code> 或 <code>X-Public-Key</code>。</p>
       </section>
-<section class="section dark" id="zh-model-pricing">
+<section class="section" id="zh-model-pricing">
         <h2>模型价格</h2>
         <p>通过请求体中的 <code>model</code> 字段选择模型。主流程建议按质量、速度和成本选择常用模型；完整模型价格表见附录。</p>
         <div class="grid">
@@ -1061,7 +1061,7 @@
           <div class="tile"><strong>快速响应</strong><span><code>claude-4.5-haiku</code>、<code>minimax/minimax-m2.5-highspeed</code>，适合交互式 agent 和低延迟业务流程。</span></div>
         </div>
       </section>
-<section class="section dark" id="zh-security">
+<section class="section" id="zh-security">
         <h2>安全事项</h2>
         <ul>
           <li>不要将真实私钥、完整 <code>X-Params</code>、完整 <code>X-Signature</code>、<code>X-Public-Key</code> 或管理 token 写入仓库。</li>

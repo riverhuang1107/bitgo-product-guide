@@ -1051,7 +1051,7 @@
 }</code></pre>
         <p class="callout">An <code>orders: []</code> response with <code>total: 0</code> means that the bitgo wallet has no consumption records yet. Logs and documentation may include business fields such as <code>wallet_address</code>, <code>money</code>, <code>money_id</code>, the endpoint URL, order list, and <code>total</code>; redact <code>orderId</code>, <code>accountId</code>, <code>subId</code>, <code>userId</code>, signature fields, and other identifiers as appropriate. Never record private keys, complete signatures, complete <code>X-Params</code>, <code>X-Signature</code>, or <code>X-Public-Key</code>.</p>
       </section>
-<section class="section dark" id="en-model-pricing">
+<section class="section" id="en-model-pricing">
         <h2>Models and Pricing</h2>
         <p>Select a model through the <code>model</code> field in the request body. For the main flow, choose common models by quality, latency, and cost; the full pricing table is in the appendix.</p>
         <div class="grid">
@@ -1061,7 +1061,7 @@
           <div class="tile"><strong>Fast response</strong><span><code>claude-4.5-haiku</code> and <code>minimax/minimax-m2.5-highspeed</code> are suitable for interactive agents and low-latency business flows.</span></div>
         </div>
       </section>
-<section class="section dark" id="en-security">
+<section class="section" id="en-security">
         <h2>Security Notes</h2>
         <ul>
           <li>Do not write real private keys, complete <code>X-Params</code>, complete <code>X-Signature</code>, <code>X-Public-Key</code>, or management tokens into repositories.</li>
