@@ -991,7 +991,7 @@
           <div class="tile"><strong>Expandable scenarios</strong><span>The same mechanism can extend to model calls, tool calls, data purchases, API subscriptions, and other digital service settlement flows.</span></div>
         </div>
       </section>
-<section class="section dark" id="en-workflow">
+<section class="section" id="en-workflow">
         <h2>Workflow</h2>
         <p>The bitgo flow has five steps. Humans confirm funds, chain, and sensitive authorization details; agents or software turn the confirmed information into a verifiable reasoning API request.</p>
         <figure class="workflow-figure">
@@ -1205,7 +1205,7 @@ Security and authorization principles:
         <p class="callout">In production, keep private keys in environment variables, a secret manager, or deployment-platform secrets, and generate <code>X-Params</code> only at runtime. Logs may record <code>accountId</code>, <code>balance</code>, and pagination metadata, but must not record private keys or complete signing material.</p>
         <div class="warning">Security note: a wrong address, wrong mainnet, or mismatched network type such as Taproot/ERC-20 may cause permanent asset loss.</div>
       </section>
-<section class="section dark" id="en-signing-auth">
+<section class="section" id="en-signing-auth">
         <h2>Signing and Authentication</h2>
         <p>The reasoning API uses two authentication layers: a wallet business signature proves funding authorization, and an interface-level ECDSA signature proves that the HTTP request has not been replaced. The interface-level signature uses a separate ECDSA private key and is generally implemented by the agent; it is neither a Web3 wallet private key nor a wallet-address signature.</p>
         <h3>Wallet business signature</h3>

@@ -991,7 +991,7 @@
           <div class="tile"><strong>场景可扩展</strong><span>同一机制可扩展到模型调用、工具调用、数据购买、API 订阅和其他数字服务结算。</span></div>
         </div>
       </section>
-<section class="section dark" id="zh-workflow">
+<section class="section" id="zh-workflow">
         <h2>使用流程</h2>
         <p>bitgo 的主流程可以拆成五步。人负责确认资金、链和敏感授权信息，agent 或软件负责把确认后的信息转化为可验证的推理 API 请求。</p>
         <figure class="workflow-figure">
@@ -1205,7 +1205,7 @@ bitgo 是面向 agent 的虚拟资产账户与支付授权层，可将链上充�
         <p class="callout">工程实现时请把私钥放在环境变量、Secret 管理器或部署平台密钥中，只在运行时生成 <code>X-Params</code>；日志里可以记录 <code>accountId</code>、<code>balance</code> 和分页信息，但不要记录私钥或完整签名材料。</p>
         <div class="warning">安全提示：地址填错、主网选错或 Taproot/ERC-20 等网络类型不匹配，可能导致资产永久丢失。</div>
       </section>
-<section class="section dark" id="zh-signing-auth">
+<section class="section" id="zh-signing-auth">
         <h2>签名认证</h2>
         <p>推理 API 使用两层认证：钱包业务签名证明资金授权，接口级 ECDSA 签名证明本次 HTTP 请求没有被替换。接口级签名使用独立的 ECDSA 私钥，一般由 agent 负责实现；它不是 Web3 钱包私钥，也不是钱包地址签名。</p>
         <h3>钱包业务签名</h3>
