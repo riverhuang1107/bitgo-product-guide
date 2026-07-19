@@ -916,6 +916,19 @@
       .language-document .section h2 { font-size:26px; }
       .language-document .grid, .language-document .grid.three, .language-document .metrics { grid-template-columns:1fr; }
       .language-document table { min-width:620px; }
+      .language-document .api-auth-table { display:block; min-width:0; border:0; overflow:visible; }
+      .language-document .api-auth-table thead { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap; }
+      .language-document .api-auth-table tbody,
+      .language-document .api-auth-table tr,
+      .language-document .api-auth-table td { display:block; width:100%; }
+      .language-document .api-auth-table tr { margin-bottom:12px; border:1px solid var(--line); border-radius:8px; overflow:hidden; background:var(--white); }
+      .language-document .api-auth-table td { padding:12px 14px; border-bottom:1px solid var(--line); white-space:normal; overflow-wrap:anywhere; word-break:break-word; }
+      .language-document .api-auth-table td:last-child { border-bottom:0; }
+      .language-document .api-auth-table td::before { display:block; margin-bottom:5px; color:var(--blue-dark); font-size:12px; font-weight:800; }
+      .language-document .api-auth-table td:nth-child(1)::before { content:"项目"; }
+      .language-document .api-auth-table td:nth-child(2)::before { content:"值"; }
+      .language-document .api-auth-table td:nth-child(3)::before { content:"说明"; }
+      .language-document .api-auth-table td code { white-space:normal; overflow-wrap:anywhere; word-break:break-word; }
       .language-document .copy-actions { position:static; margin:12px 0 0; }
     }
     @media (max-width: 480px) {
@@ -950,7 +963,7 @@
     <div class="doc-main"><article class="language-document" data-language-document="zh"><section class="section" id="zh-api-call">
         <h2>推理API调用</h2>
         <p>agent 或软件将任务上下文写入 <code>messages</code>，选择模型后发送到推理 API。请求体采用 Anthropic Messages 风格。</p>
-        <table>
+        <table class="api-auth-table">
           <thead><tr><th>项目</th><th>值</th><th>说明</th></tr></thead>
           <tbody>
             <tr><td><code>endpoint</code></td><td><code>https://api-bitgo.enigmhaven.com/v1/messages</code></td><td>推理 API 请求地址</td></tr>
@@ -1002,7 +1015,7 @@
         </ul>
         <h3>bitgo零钱包消费记录查询</h3>
         <p>模型或 API 消费完成后，可以用 BFF bitgo零钱包接口查询指定 <code>money_id</code> 的消费订单。查询前必须确认同一币种、同一 <code>wallet_address</code>、授权金额 <code>money</code> 和 <code>money_id</code>；<code>money_id</code> 在 BFF 响应中对应 <code>subId</code>。</p>
-        <table>
+        <table class="api-auth-table">
           <thead><tr><th>项目</th><th>值</th><th>说明</th></tr></thead>
           <tbody>
             <tr><td><code>endpoint</code></td><td><code>https://bitgo.enigmhaven.com/api/bff/v1/sub-wallet/orders</code></td><td>查询 bitgo零钱包消费订单。</td></tr>

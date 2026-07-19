@@ -916,6 +916,19 @@
       .language-document .section h2 { font-size:26px; }
       .language-document .grid, .language-document .grid.three, .language-document .metrics { grid-template-columns:1fr; }
       .language-document table { min-width:620px; }
+      .language-document .api-auth-table { display:block; min-width:0; border:0; overflow:visible; }
+      .language-document .api-auth-table thead { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap; }
+      .language-document .api-auth-table tbody,
+      .language-document .api-auth-table tr,
+      .language-document .api-auth-table td { display:block; width:100%; }
+      .language-document .api-auth-table tr { margin-bottom:12px; border:1px solid var(--line); border-radius:8px; overflow:hidden; background:var(--white); }
+      .language-document .api-auth-table td { padding:12px 14px; border-bottom:1px solid var(--line); white-space:normal; overflow-wrap:anywhere; word-break:break-word; }
+      .language-document .api-auth-table td:last-child { border-bottom:0; }
+      .language-document .api-auth-table td::before { display:block; margin-bottom:5px; color:var(--blue-dark); font-size:12px; font-weight:800; }
+      .language-document .api-auth-table td:nth-child(1)::before { content:"Item"; }
+      .language-document .api-auth-table td:nth-child(2)::before { content:"Value"; }
+      .language-document .api-auth-table td:nth-child(3)::before { content:"Description"; }
+      .language-document .api-auth-table td code { white-space:normal; overflow-wrap:anywhere; word-break:break-word; }
       .language-document .copy-actions { position:static; margin:12px 0 0; }
     }
     @media (max-width: 480px) {
