@@ -836,9 +836,18 @@
   
     :root { --topbar-height: 68px; --sidebar-width: 284px; }
     * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; scroll-padding-top: calc(var(--topbar-height) + 24px); overflow-x: hidden; }
+    html { scroll-behavior: auto; scroll-padding-top: calc(var(--topbar-height) + 24px); overflow-x: hidden; }
     body { margin: 0; min-width: 320px; overflow-x: hidden; }
     body.nav-open { overflow: hidden; }
+    @view-transition { navigation: auto; }
+    .app-header { view-transition-name: app-header; }
+    .doc-sidebar { view-transition-name: doc-sidebar; }
+    .doc-main { view-transition-name: doc-main; }
+    ::view-transition-old(root), ::view-transition-new(root), ::view-transition-old(app-header), ::view-transition-new(app-header), ::view-transition-old(doc-sidebar), ::view-transition-new(doc-sidebar) { animation:none; mix-blend-mode:normal; }
+    ::view-transition-old(doc-main) { animation:140ms ease both doc-content-out; }
+    ::view-transition-new(doc-main) { animation:220ms ease both doc-content-in; }
+    @keyframes doc-content-out { to { opacity:0; transform:translateY(-4px); } }
+    @keyframes doc-content-in { from { opacity:0; transform:translateY(6px); } }
     .app-header {
       position: fixed; inset: 0 0 auto 0; z-index: 1000; height: var(--topbar-height);
       display: flex; align-items: center; justify-content: space-between; gap: 20px;
@@ -1238,9 +1247,9 @@ bitgo 是面向 agent 的虚拟资产账户与支付授权层，可将链上充�
 var copyResetTimers=new WeakMap(), currentSection="why-bitgo", scrollFrame=0, sections=[], navigationLock="", navigationLockTimer=0;
     function setActiveLink(section){sidebar.querySelectorAll('.sidebar-link[data-category="overview"]').forEach(function(link){var active=link.dataset.section===section;link.classList.toggle("active",active);if(active)link.setAttribute("aria-current","location");else link.removeAttribute("aria-current");});}
     function updateActiveFromScroll(){if(navigationLock){currentSection=navigationLock;setActiveLink(currentSection);return;}if(!sections.length)return;var selected=sections[0],cutoff=200;if(window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-4){selected=sections[sections.length-1];}else{sections.forEach(function(section){if(section.getBoundingClientRect().top<=cutoff)selected=section;});}currentSection=selected.id.replace("zh-","");setActiveLink(currentSection);}
-    function releaseNavigationLock(){if(!navigationLock)return;navigationLock="";window.clearTimeout(navigationLockTimer);navigationLockTimer=0;updateActiveFromScroll();}
-    function lockNavigation(section){navigationLock=section;window.clearTimeout(navigationLockTimer);navigationLockTimer=window.setTimeout(releaseNavigationLock,1200);}
-    function scrollToNavigationTarget(link){if(!link.hash)return false;var target=document.querySelector(link.hash);if(!target)return false;var heading=target.querySelector("h2, .eyebrow")||target;var topbar=parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--topbar-height"))||68;history.pushState(null,"",link.hash);window.scrollTo({top:Math.max(0,window.scrollY+heading.getBoundingClientRect().top-topbar-28),behavior:"smooth"});return true;}
+    function releaseNavigationLock(force){if(!navigationLock)return;var target=document.getElementById("zh-"+navigationLock),topbar=parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--topbar-height"))||68,reached=target&&Math.abs(target.getBoundingClientRect().top-topbar-28)<=6,atBottom=window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-4;if(!force&&!reached&&!atBottom)return;navigationLock="";window.clearTimeout(navigationLockTimer);navigationLockTimer=0;updateActiveFromScroll();}
+    function lockNavigation(section){navigationLock=section;window.clearTimeout(navigationLockTimer);navigationLockTimer=window.setTimeout(function(){releaseNavigationLock(true);},4000);}
+    function scrollToNavigationTarget(link){if(!link.hash)return false;var target=document.querySelector(link.hash);if(!target)return false;var heading=target.querySelector("h2, .eyebrow")||target,topbar=parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--topbar-height"))||68,top=Math.max(0,window.scrollY+heading.getBoundingClientRect().top-topbar-28),commit=function(){history.pushState(null,"",link.hash);window.scrollTo({top:top,behavior:"auto"});};if(document.startViewTransition)document.startViewTransition(commit);else commit();return true;}
     sidebar.addEventListener("click",function(event){var link=event.target.closest('.sidebar-link[data-category="overview"]');if(link&&scrollToNavigationTarget(link))event.preventDefault();});
     function alignCurrentHash(){if(!location.hash)return;var target=document.querySelector(location.hash);if(!target)return;var heading=target.querySelector("h2, .eyebrow")||target;var topbar=parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--topbar-height"))||68;window.scrollTo({top:Math.max(0,window.scrollY+heading.getBoundingClientRect().top-topbar-28),behavior:"auto"});}
     window.addEventListener("pageshow",function(){requestAnimationFrame(alignCurrentHash);});window.addEventListener("load",alignCurrentHash);window.addEventListener("popstate",alignCurrentHash);
