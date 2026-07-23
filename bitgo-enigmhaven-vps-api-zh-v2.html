@@ -196,6 +196,27 @@
   -H "X-Nonce: RANDOM_NONCE" \
   -H "X-Signature: ECDSA_SIGNATURE_HEX" \
   -H "X-Public-Key: ECDSA_PUBLIC_KEY"</code></pre><p class="warning">删除通常不可逆。调用前核对 <code>instanceId</code>，确认实例内数据已备份，并获得明确授权。</p>
+        <h3>查询实例计费汇总</h3><p><code>GET /vps/v1/billings</code> 分页查询 VPS 实例的累计计费记录，支持按实例 ID 筛选。此接口需要携带两层签名认证所需的四个 Header。</p>
+        <table><thead><tr><th>参数</th><th>类型</th><th>必填</th><th>说明</th></tr></thead><tbody><tr><td><code>pageSize</code></td><td>int64</td><td>否</td><td>每页记录数</td></tr><tr><td><code>pageNum</code></td><td>int64</td><td>否</td><td>页码</td></tr><tr><td><code>instanceId</code></td><td>string</td><td>否</td><td>按 VPS 实例 ID 筛选</td></tr></tbody></table>
+        <pre><code>curl "https://bitgo-vps.expvent.com.cn:1111/vps/v1/billings?pageSize=20&amp;pageNum=1&amp;instanceId=INSTANCE_ID" \
+  -H "X-Params: BASE64_ENCODED_WALLET_PARAMS" \
+  -H "X-Nonce: RANDOM_NONCE" \
+  -H "X-Signature: ECDSA_SIGNATURE_HEX" \
+  -H "X-Public-Key: ECDSA_PUBLIC_KEY"</code></pre>
+        <h4>响应字段</h4><div class="table-scroll"><table><thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead><tbody><tr><td><code>instanceBilling</code></td><td>array</td><td>实例计费汇总记录列表</td></tr><tr><td><code>instanceBilling[].id</code></td><td>uint64（字符串）</td><td>计费记录主键</td></tr><tr><td><code>instanceBilling[].createdAt</code></td><td>string</td><td>记录创建时间</td></tr><tr><td><code>instanceBilling[].instanceId</code></td><td>string</td><td>VPS 实例 ID</td></tr><tr><td><code>instanceBilling[].instanceName</code></td><td>string</td><td>VPS 实例名称</td></tr><tr><td><code>instanceBilling[].userid</code></td><td>string</td><td>所属用户 ID</td></tr><tr><td><code>instanceBilling[].charge</code></td><td>string</td><td>累计费用，以 decimal 字符串表示</td></tr><tr><td><code>totalCount</code></td><td>int64</td><td>符合筛选条件的总记录数</td></tr></tbody></table></div>
+        <pre><code>{
+  "instanceBilling": [
+    {
+      "id": "1",
+      "createdAt": "2026-07-23T08:00:00Z",
+      "instanceId": "instance-id",
+      "instanceName": "dev-vps-01",
+      "userid": "user-id",
+      "charge": "0.01488"
+    }
+  ],
+  "totalCount": 1
+}</code></pre>
         <h3>推荐调用流程</h3><ol><li>查询可用 VPS 资源，确认 <code>zoneId</code>、<code>instanceTypeId</code> 和 <code>imageId</code>。</li><li>按两层签名认证查询或创建 SSH Key。</li><li>按两层签名认证创建 VPS，并保存返回的 <code>instanceId</code>。</li><li>轮询单实例查询接口，直到实例进入可用状态；不要仅以创建请求返回 <code>200</code> 判断已可用。</li><li>按明确授权启动、停止或删除实例。</li></ol>
         <h3>实例状态</h3><div class="table-scroll"><table><thead><tr><th>状态</th><th>含义</th></tr></thead><tbody><tr><td><code>InstanceStatusUnknown</code></td><td>未知</td></tr><tr><td><code>InstanceStatusNew</code></td><td>新建</td></tr><tr><td><code>InstanceStatusActive</code></td><td>活跃</td></tr><tr><td><code>InstanceStatusOff</code></td><td>关闭</td></tr><tr><td><code>InstanceStatusArchive</code></td><td>已归档</td></tr><tr><td><code>InstanceStatusResizing</code></td><td>调整规格中</td></tr><tr><td><code>InstanceStatusDeploying</code></td><td>部署中</td></tr><tr><td><code>InstanceStatusRebuilding</code></td><td>重装中</td></tr><tr><td><code>InstanceStatusReboot</code></td><td>重启中</td></tr><tr><td><code>InstanceStatusRunning</code></td><td>运行中</td></tr><tr><td><code>InstanceStatusStopped</code></td><td>已停止</td></tr><tr><td><code>InstanceStatusBooting</code></td><td>启动中</td></tr><tr><td><code>InstanceStatusReleasing</code></td><td>释放中</td></tr><tr><td><code>InstanceStatusStopping</code></td><td>停止中</td></tr><tr><td><code>InstanceStatusRecycle</code></td><td>位于回收站</td></tr><tr><td><code>InstanceStatusRecycling</code></td><td>回收中</td></tr><tr><td><code>InstanceStatusCreateFailed</code></td><td>创建失败</td></tr><tr><td><code>InstanceStatusImaging</code></td><td>制作镜像中</td></tr></tbody></table></div>
         <h3>错误处理与审计</h3><ul><li>服务定义仅声明成功响应 <code>200</code>，客户端必须检查实际 HTTP 状态码，不要假设所有响应都成功。</li><li>对网络超时、TLS 错误和 <code>5xx</code> 实现有限次数退避重试；对创建、启停、删除等写操作谨慎重试，避免重复执行。</li><li>日志可以保留请求时间、路径、状态码和脱敏后的服务端错误信息；不要记录密码、私钥或完整认证 Header。</li><li>如开发环境证书无法被本机信任，可临时使用 <code>curl -k</code> 排查连通性；生产环境必须配置并校验有效证书。</li></ul>
