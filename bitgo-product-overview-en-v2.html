@@ -1213,7 +1213,7 @@ Security and authorization principles:
   &quot;total&quot;: 20
 }</code></pre>
         <h3>bitgo Wallet Information Query</h3>
-        <p>Before or after a reasoning API call, use the BFF bitgo wallet endpoint to query the wallet balance, authorized total amount, and coin type for a specified <code>money_id</code>. Before querying, confirm the same chain, <code>wallet_address</code>, authorized amount <code>money</code>, and <code>money_id</code>; the BFF response exposes <code>money_id</code> as <code>subId</code>.</p>
+        <p>Use the BFF bitgo wallet endpoint to query the wallet balance, authorized total amount, and coin type for a specified <code>money_id</code>. Before querying, confirm the same chain, <code>wallet_address</code>, authorized amount <code>money</code>, and <code>money_id</code>; the BFF response exposes <code>money_id</code> as <code>subId</code>.</p>
         <table>
           <thead><tr><th>Item</th><th>Value</th><th>Description</th></tr></thead>
           <tbody>
@@ -1237,16 +1237,16 @@ Security and authorization principles:
   &quot;wallet&quot;: {
     &quot;accountId&quot;: &quot;ACCOUNT_ID_REDACTED&quot;,
     &quot;subId&quot;: &quot;money_YYYYMMDD_REDACTED&quot;,
-    &quot;subBalance&quot;: &quot;4.97259320&quot;,
-    &quot;subTotalAmount&quot;: &quot;5.00000000&quot;,
-    &quot;coinType&quot;: &quot;BTC&quot;,
-    &quot;createdAt&quot;: &quot;2026-07-25T00:39:14.000Z&quot;,
-    &quot;updatedAt&quot;: &quot;2026-07-26T00:00:00.000Z&quot;
+    &quot;subBalance&quot;: &quot;SUB_BALANCE_DECIMAL&quot;,
+    &quot;subTotalAmount&quot;: &quot;SUB_TOTAL_AMOUNT_DECIMAL&quot;,
+    &quot;coinType&quot;: &quot;COIN_TYPE&quot;,
+    &quot;createdAt&quot;: &quot;CREATED_AT_RFC3339&quot;,
+    &quot;updatedAt&quot;: &quot;UPDATED_AT_RFC3339&quot;
   }
 }</code></pre>
         <p class="callout"><code>subBalance</code> is the current available balance, and <code>subTotalAmount</code> is the authorized total amount when the bitgo wallet was created. Logs and documentation may include only redacted <code>wallet_address</code>, <code>money</code>, <code>money_id</code>, the endpoint URL, and necessary balance fields; redact <code>accountId</code>, <code>subId</code>, signature fields, and other identifiers as appropriate. Never record private keys, complete signatures, complete <code>X-Params</code>, <code>X-Signature</code>, or <code>X-Public-Key</code>.</p>
         <h3>bitgo wallet Consumption Records</h3>
-        <p>After a model or API call, query the BFF bitgo wallet endpoint for consumption orders associated with a specific <code>money_id</code>. Before querying, confirm the same chain, <code>wallet_address</code>, authorized amount <code>money</code>, and <code>money_id</code>; the BFF response exposes <code>money_id</code> as <code>subId</code>.</p>
+        <p>After a model or VPS consumption, query the BFF bitgo wallet endpoint for consumption orders associated with a specific <code>money_id</code>. Before querying, confirm the same chain, <code>wallet_address</code>, authorized amount <code>money</code>, and <code>money_id</code>; the BFF response exposes <code>money_id</code> as <code>subId</code>.</p>
         <table>
           <thead><tr><th>Item</th><th>Value</th><th>Description</th></tr></thead>
           <tbody>
@@ -1267,28 +1267,28 @@ Security and authorization principles:
         <pre><code class="language-json">{
   &quot;orders&quot;: [
     {
-      &quot;orderId&quot;: &quot;[REDACTED]&quot;,
-      &quot;accountId&quot;: &quot;[REDACTED]&quot;,
-      &quot;subId&quot;: &quot;money_20260726_0188a22887801d2e&quot;,
+      &quot;orderId&quot;: &quot;ORDER_ID_REDACTED&quot;,
+      &quot;accountId&quot;: &quot;ACCOUNT_ID_REDACTED&quot;,
+      &quot;subId&quot;: &quot;money_YYYYMMDD_REDACTED&quot;,
       &quot;category&quot;: &quot;VPS&quot;,
       &quot;type&quot;: &quot;deduct&quot;,
-      &quot;amount&quot;: &quot;0.05952000&quot;,
-      &quot;refOrderId&quot;: &quot;&quot;,
-      &quot;description&quot;: &quot;instance-id: 1738135287701313685; instance-name: ai-trending&quot;,
-      &quot;createdAt&quot;: &quot;2026-07-26T04:04:36.966Z&quot;,
-      &quot;userId&quot;: &quot;[REDACTED]&quot;
+      &quot;amount&quot;: &quot;AMOUNT_DECIMAL&quot;,
+      &quot;refOrderId&quot;: &quot;REF_ORDER_ID_REDACTED&quot;,
+      &quot;description&quot;: &quot;instance-id: INSTANCE_ID_REDACTED; instance-name: INSTANCE_NAME_REDACTED&quot;,
+      &quot;createdAt&quot;: &quot;CREATED_AT_RFC3339&quot;,
+      &quot;userId&quot;: &quot;USER_ID_REDACTED&quot;
     },
     {
-      &quot;orderId&quot;: &quot;ORDER_ID_REDACTED_2&quot;,
+      &quot;orderId&quot;: &quot;ORDER_ID_REDACTED&quot;,
       &quot;accountId&quot;: &quot;ACCOUNT_ID_REDACTED&quot;,
-      &quot;subId&quot;: &quot;money_20260710_REDACTED&quot;,
+      &quot;subId&quot;: &quot;money_YYYYMMDD_REDACTED&quot;,
       &quot;category&quot;: &quot;TOKEN&quot;,
       &quot;type&quot;: &quot;deduct&quot;,
-      &quot;amount&quot;: &quot;0.01362780&quot;,
-      &quot;refOrderId&quot;: &quot;&quot;,
-      &quot;description&quot;: &quot;model: claude-4.6-opus; input_token: 1017; output_token: 339&quot;,
-      &quot;createdAt&quot;: &quot;2026-07-10T03:31:21.512Z&quot;,
-      &quot;userId&quot;: &quot;USER_ID_REDACTED_2&quot;
+      &quot;amount&quot;: &quot;AMOUNT_DECIMAL&quot;,
+      &quot;refOrderId&quot;: &quot;REF_ORDER_ID_REDACTED&quot;,
+      &quot;description&quot;: &quot;model: MODEL_NAME; input_token: INPUT_TOKEN_COUNT; output_token: OUTPUT_TOKEN_COUNT&quot;,
+      &quot;createdAt&quot;: &quot;CREATED_AT_RFC3339&quot;,
+      &quot;userId&quot;: &quot;USER_ID_REDACTED&quot;
     }
   ],
   &quot;total&quot;: 2
