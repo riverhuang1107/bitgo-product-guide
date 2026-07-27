@@ -68,7 +68,7 @@
     li + li { margin-top:8px; }
     .callout,.warning { margin:18px 0; padding:14px 16px; border-left:5px solid var(--blue); border-radius:8px; background:var(--blue-soft); color:var(--blue-dark); }
     .warning { border-left-color:#b54708; background:#fff4e5; color:#7a2e0e; }
-    .footer-note { margin-top:40px; color:var(--muted); font-size:13px; }
+    .footer-note { margin-top:40px; color:var(--muted); font-size:13px; text-align:center; }
     .drawer-backdrop { display:none; position:fixed; z-index:850; inset:var(--topbar-height) 0 0; background:rgba(6,17,31,.42); }
     @media (max-width:980px) { :root { --sidebar-width:260px; } .language-document { padding-inline:34px; } }
     @media (max-width:760px) { :root { --topbar-height:62px; } .app-header { padding:0 16px; } .app-brand { font-size:16px; } .brand-mark { width:30px; height:30px; flex-basis:30px; border-radius:7px; } .menu-button { display:grid; place-items:center; } .language-button { padding:7px 10px; } .doc-sidebar { width:min(84vw,300px); transform:translateX(-100%); transition:transform .22s ease; box-shadow:18px 0 40px rgba(6,17,31,.12); } body.nav-open .doc-sidebar { transform:translateX(0); } .doc-main { margin-left:0; } .language-document { padding:34px 20px 64px; } .hero { padding-bottom:30px; } .hero-title, .section h2 { font-size:26px; } .section { padding:30px 0; } .grid { grid-template-columns:1fr; } table { min-width:620px; } }
@@ -196,7 +196,7 @@
   -H "X-Nonce: RANDOM_NONCE" \
   -H "X-Signature: ECDSA_SIGNATURE_HEX" \
   -H "X-Public-Key: ECDSA_PUBLIC_KEY"</code></pre><p class="warning">删除通常不可逆。调用前核对 <code>instanceId</code>，确认实例内数据已备份，并获得明确授权。</p>
-        <h3>查询实例计费汇总</h3><p><code>GET /vps/v1/billings</code> 分页查询 VPS 实例的累计计费记录，支持按实例 ID 筛选。此接口需要携带两层签名认证所需的四个 Header。</p>
+        <h3>查询实例计费汇总</h3><p><code>GET /vps/v1/billings</code> 分页查询 VPS 实例的累计计费记录，支持按实例 ID 筛选。此接口需要携带两层签名认证所需的四个 Header。如需核对最新的 bitgo 零钱包余额及 VPS 消费明细，可通过查询 bitgo 零钱包信息和查询 bitgo 零钱包消费记录接口获取。</p>
         <table><thead><tr><th>参数</th><th>类型</th><th>必填</th><th>说明</th></tr></thead><tbody><tr><td><code>pageSize</code></td><td>int64</td><td>否</td><td>每页记录数</td></tr><tr><td><code>pageNum</code></td><td>int64</td><td>否</td><td>页码</td></tr><tr><td><code>instanceId</code></td><td>string</td><td>否</td><td>按 VPS 实例 ID 筛选</td></tr></tbody></table>
         <pre><code>curl "https://api-bitgo.enigmhaven.com/vps/v1/billings?pageSize=20&amp;pageNum=1&amp;instanceId=INSTANCE_ID" \
   -H "X-Params: BASE64_ENCODED_WALLET_PARAMS" \

@@ -1212,7 +1212,7 @@ Security and authorization principles:
   ],
   &quot;total&quot;: 20
 }</code></pre>
-        <h3>bitgo Wallet Information Query</h3>
+        <h3>Query bitgo Wallet Information</h3>
         <p>Use the BFF bitgo wallet endpoint to query the wallet balance, authorized total amount, and coin type for a specified <code>money_id</code>. Before querying, confirm the same chain, <code>wallet_address</code>, authorized amount <code>money</code>, and <code>money_id</code>; the BFF response exposes <code>money_id</code> as <code>subId</code>.</p>
         <table>
           <thead><tr><th>Item</th><th>Value</th><th>Description</th></tr></thead>
@@ -1245,7 +1245,7 @@ Security and authorization principles:
   }
 }</code></pre>
         <p class="callout"><code>subBalance</code> is the current available balance, and <code>subTotalAmount</code> is the authorized total amount when the bitgo wallet was created. Logs and documentation may include only redacted <code>wallet_address</code>, <code>money</code>, <code>money_id</code>, the endpoint URL, and necessary balance fields; redact <code>accountId</code>, <code>subId</code>, signature fields, and other identifiers as appropriate. Never record private keys, complete signatures, complete <code>X-Params</code>, <code>X-Signature</code>, or <code>X-Public-Key</code>.</p>
-        <h3>bitgo wallet Consumption Records</h3>
+        <h3>Query bitgo Wallet Consumption Records</h3>
         <p>After a model or VPS consumption, query the BFF bitgo wallet endpoint for consumption orders associated with a specific <code>money_id</code>. Before querying, confirm the same chain, <code>wallet_address</code>, authorized amount <code>money</code>, and <code>money_id</code>; the BFF response exposes <code>money_id</code> as <code>subId</code>.</p>
         <table>
           <thead><tr><th>Item</th><th>Value</th><th>Description</th></tr></thead>
