@@ -749,7 +749,15 @@
       margin-top: 34px;
       color: var(--muted);
       font-size: 13px;
-      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .footer-note a {
+      color: var(--muted);
+      white-space: nowrap;
     }
 
     @media (max-width: 900px) {
@@ -986,7 +994,7 @@
               </div>
               <p class="lead copy-text-block" id="en-agent-intro-text">bitgo helps your product experiment faster and ship faster. Experimentation is an agent superpower, and agents need a tight “write → deploy → verify” loop. Background AI sessions that do not require human intervention are becoming normal; agents are also developing their own deployment patterns so they can work out of the box without extra steps or temporary credentials. bitgo is the agent’s useful companion: a virtual asset account and payment authorization layer for AI agents, allowing agents to safely, smoothly, and invisibly consume models, cloud hosts, and other digital services.<span class="agent-doc-link">Please ask the agent to carefully read the product documentation: <a href="https://bitgo.enigmhaven.com/bitgo-product-overview-en-v2.html" target="_blank" rel="noopener">https://bitgo.enigmhaven.com/bitgo-product-overview-en-v2.html</a>.</span></p>
             </div>
-            <p class="hero-note">Tip: copy this introduction to your agent so it can meet this new friend.</p>
+            <p class="hero-note">Tip: copy this introduction to your agent so it can meet this new friend. If you have any questions while using bitgo, please email support@enigmhaven.com to contact us.</p>
           </div>
         </div>
       </header>
@@ -1320,7 +1328,7 @@ Security and authorization principles:
         </table>
         <p class="callout">The final request must include <code>X-Params</code>, <code>X-Nonce</code>, <code>X-Signature</code>, and <code>X-Public-Key</code>.</p>
       </section>
-<p class="footer-note">bitgo optimized product guide for agent software development and software-embedded reasoning workloads.</p></article></div>
+<p class="footer-note"><span>bitgo optimized product guide for agent software development and software-embedded reasoning workloads.</span><a href="mailto:support@enigmhaven.com">support@enigmhaven.com</a></p></article></div>
   </div>
 <script>
   (function () {
