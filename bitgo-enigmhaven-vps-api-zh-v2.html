@@ -60,6 +60,7 @@
     .table-scroll { max-width:100%; overflow-x:auto; margin:18px 0; border:1px solid var(--line); border-radius:8px; }
     table { width:100%; border-collapse:collapse; margin:18px 0; overflow:hidden; border:1px solid var(--line); border-radius:8px; background:var(--white); font-size:14px; }
     .table-scroll table { min-width:980px; margin:0; border:0; border-radius:0; }
+    #zh-vps-resources h4:nth-of-type(-n + 2) + .table-scroll table { min-width:0; }
     th,td { padding:12px 14px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
     th:nth-child(-n + 2),td:nth-child(-n + 2),td:nth-child(-n + 2) code { white-space:nowrap; word-break:normal; overflow-wrap:normal; }
     th { color:#8fc2ff; background:var(--black); font-weight:800; }
@@ -79,6 +80,7 @@
     @media (max-width:480px) { .app-brand > span:last-child { display:none; } .header-actions { gap:7px; } .language-button { padding-inline:9px; } }
     @media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } *,*::before,*::after { transition-duration:.01ms !important; animation-duration:.01ms !important; animation-iteration-count:1 !important; } }
   </style>
+  <style>@media (max-width:760px) { table { display:table; max-width:100%; overflow-x:visible; } .table-scroll table { min-width:0; } }</style>
 </head>
 <body>
   <header class="app-header">
@@ -105,7 +107,15 @@
 └── instanceTypes[instanceTypeId]
     ├── instanceType
     └── images[]</code></pre>
-        <div class="grid"><div class="tile"><strong>区域</strong><span>从 <code>zones</code> 中选择可用的 <code>zoneId</code>。</span></div><div class="tile"><strong>规格</strong><span>实例规格通常包含 CPU、内存、磁盘、带宽、库存、网络计费类型、月价、时价和流量字段。</span></div><div class="tile"><strong>镜像</strong><span>从选定规格的 <code>images[]</code> 中读取 <code>imageId</code>。</span></div><div class="tile"><strong>价格字段</strong><span>价格与流量字段在服务定义中为字符串；客户端应保留原始值并结合服务端说明展示。</span></div></div>
+        <div class="grid"><div class="tile"><strong>区域</strong><span>接口当前返回 20 个可用区域；创建时从 <code>zones</code> 读取对应的 <code>zoneId</code>。</span></div><div class="tile"><strong>规格</strong><span>当前可选规格覆盖 <code>1C / 1GB</code> 至 <code>32C / 128GB</code>；同时返回磁盘、流量和价格字段。</span></div><div class="tile"><strong>镜像</strong><span>从选定规格的 <code>images[]</code> 中读取 <code>imageId</code>；同一镜像在不同区域或规格的可用性可能不同。</span></div><div class="tile"><strong>价格字段</strong><span>使用服务端返回的 <code>doPriceMonthly</code> 和 <code>doPriceHourly</code> 原值；创建前必须再次查询确认。</span></div></div>
+        <h3>资源示例</h3>
+        <p>以下示例来自本接口响应，用于帮助选择资源；区域库存、镜像版本、规格与价格会变化，创建 VPS 前请调用接口并以响应中的 ID 与价格字段为准。</p>
+        <h4>可用区域（节选）</h4>
+        <div class="table-scroll"><table><thead><tr><th>位置</th><th>zoneId</th></tr></thead><tbody><tr><td>香港</td><td><code>asia-southeast-1a</code></td></tr><tr><td>新加坡</td><td><code>asia-southwest-1a</code></td></tr><tr><td>法兰克福</td><td><code>europe-central-1a</code></td></tr><tr><td>洛杉矶</td><td><code>na-west-1a</code></td></tr><tr><td>圣保罗</td><td><code>sa-east-1a</code></td></tr></tbody></table></div>
+        <h4>典型镜像（香港规格可见）</h4>
+        <div class="table-scroll"><table><thead><tr><th>镜像</th><th>imageId</th></tr></thead><tbody><tr><td>Ubuntu Server 24.04 LTS</td><td><code>ubuntu2404_20260514</code></td></tr><tr><td>Debian 12</td><td><code>debian12_20260513</code></td></tr><tr><td>RockyLinux Base 9.7</td><td><code>rocky97_20260515</code></td></tr><tr><td>AlmaLinux 9.7</td><td><code>almalinux97_20260516</code></td></tr><tr><td>CentOS Stream 9</td><td><code>centos9_20260515</code></td></tr></tbody></table></div>
+        <h4>推荐规格与当前价格字段</h4>
+        <div class="table-scroll"><table><thead><tr><th>场景</th><th>区域</th><th>instanceTypeId</th><th>CPU / 内存</th><th>磁盘 / 流量</th><th>月价（美元）</th><th>时价（美元）</th></tr></thead><tbody><tr><td>经济型</td><td>香港</td><td><code>z2a.usr.c1m1</code></td><td>1C / 1GB</td><td>25GB / 1TB</td><td><code>10</code></td><td><code>0.01488</code></td></tr><tr><td>常规型</td><td>香港</td><td><code>z2a.cpu.2</code></td><td>2C / 4GB</td><td>100GB / 4TB</td><td><code>40</code></td><td><code>0.05952</code></td></tr><tr><td>高性能</td><td>利马</td><td><code>z2a.std.32</code></td><td>32C / 128GB</td><td>2000GB / 12TB</td><td><code>1280</code></td><td><code>1.90476</code></td></tr></tbody></table></div>
         <p class="callout">推荐流程：先调用本接口确认真实可售资源，再创建 SSH Key 与 VPS。不要猜测、硬编码或复用过期的区域、规格或镜像 ID。</p>
       </section>
 
