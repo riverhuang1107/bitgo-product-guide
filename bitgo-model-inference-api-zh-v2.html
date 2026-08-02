@@ -990,7 +990,7 @@
             <tr><td><code>X-Params</code></td><td><code>BASE64_ENCODED_WALLET_PARAMS</code></td><td>钱包业务签名认证参数</td></tr>
             <tr><td><code>X-Nonce</code></td><td><code>RANDOM_NONCE</code></td><td>随机字符串，参与接口级 ECDSA 签名</td></tr>
             <tr><td><code>X-Signature</code></td><td><code>ECDSA_SIGNATURE_HEX</code></td><td>对 <code>X-Params + X-Nonce</code> 签名后的 ASN.1/DER hex</td></tr>
-            <tr><td><code>X-Public-Key</code></td><td><code>ECDSA_PUBLIC_KEY</code></td><td>本地 ECDSA 公钥，用于服务端验签</td></tr>
+            <tr><td><code>X-Public-Key</code></td><td><code>BASE64_SPKI_DER_P256_PUBLIC_KEY</code></td><td>本地接口级 P-256 ECDSA 公钥的 X.509 SPKI DER 标准 Base64 编码，用于服务端验签；具体编码规则见“产品概览 · 签名认证”</td></tr>
           </tbody>
         </table>
         <h3>Anthropic Messages 请求示例</h3>
@@ -1211,7 +1211,7 @@
             <tr><td><code>X-Params</code></td><td>钱包参数 JSON 再次 base64 后的 header 值。</td></tr>
             <tr><td><code>X-Nonce</code></td><td>参与接口级签名的随机字符串。</td></tr>
             <tr><td><code>X-Signature</code></td><td>将 <code>X-Params + X-Nonce</code> 严格按顺序拼接并计算 SHA-256，再使用本地 ECDSA 私钥调用 <code>ecdsa.SignASN1</code> 对摘要生成 ASN.1/DER 签名字节，最后进行 HEX 编码。</td></tr>
-            <tr><td><code>X-Public-Key</code></td><td>用于服务端验签的本地 ECDSA 公钥。</td></tr>
+            <tr><td><code>X-Public-Key</code></td><td>用于服务端验签的本地接口级 P-256 ECDSA 公钥；其值为该公钥的 X.509 SPKI DER 标准 Base64 编码，具体规则见“产品概览 · 签名认证”。</td></tr>
             <tr><td><code>usage</code></td><td>服务端返回的 token 用量、单价、消费金额、余额和 hash。</td></tr>
           </tbody>
         </table>

@@ -1327,6 +1327,7 @@ Security and authorization principles:
           </tbody>
         </table>
         <p class="callout">The final request must include <code>X-Params</code>, <code>X-Nonce</code>, <code>X-Signature</code>, and <code>X-Public-Key</code>.</p>
+        <p>The interface-level signing rules above apply to the Reasoning API and to every VPS API except <code>GET /vps/v1/resources</code>. <code>X-Public-Key</code> must be the standard-Base64 encoding of the X.509 SubjectPublicKeyInfo (SPKI) DER bytes for the interface-level P-256 ECDSA public key. Do not send PEM text, a hexadecimal string, a raw SEC1 public-key point, or a compressed public-key point.</p>
       </section>
 <p class="footer-note"><span>bitgo optimized product guide for agent software development and software-embedded reasoning workloads.</span><a href="mailto:support@enigmhaven.com">support@enigmhaven.com</a></p></article></div>
   </div>

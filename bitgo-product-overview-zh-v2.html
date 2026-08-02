@@ -1329,6 +1329,7 @@ bitgo 是面向 agent 的虚拟资产账户与支付授权层，可将链上充�
           </tbody>
         </table>
         <p class="callout">最终请求需要同时携带 <code>X-Params</code>、<code>X-Nonce</code>、<code>X-Signature</code> 和 <code>X-Public-Key</code>。</p>
+        <p>上述接口级签名规则同时适用于推理 API，以及除 <code>GET /vps/v1/resources</code> 外的所有 VPS API。<code>X-Public-Key</code> 必须使用接口级 P-256 ECDSA 公钥的 X.509 <code>SubjectPublicKeyInfo</code>（SPKI）DER 字节，经标准 Base64 编码后的字符串。不得传递 PEM 文本、HEX 字符串、原始 SEC1 公钥点或压缩公钥点。</p>
       </section>
 <p class="footer-note"><span>bitgo optimized product guide for agent software development and software-embedded reasoning workloads.</span><a href="mailto:support@enigmhaven.com">support@enigmhaven.com</a></p></article></div>
   </div>
