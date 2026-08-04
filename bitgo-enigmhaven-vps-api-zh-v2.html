@@ -99,7 +99,7 @@
     </aside>
     <div class="drawer-backdrop" id="drawer-backdrop"></div>
     <div class="doc-main"><article class="language-document">
-      <section class="hero" id="zh-vps-intro"><div class="hero-topbar"><p class="eyebrow">enigmhaven VPS API</p></div><h1 class="hero-title">使用 bitgo 消费 enigmhaven VPS</h1><p class="lead">bitgo 除了支持大模型 token 消费，也可将 VPS 的创建、查询、启停与删除等服务调用纳入同一套可审计的支付授权链路。本文档覆盖 VPS 规格、SSH Key 与 VPS 实例的全部 API。</p><p class="hero-note">只有 <code>GET /vps/v1/resources</code> 免签。其余接口均复用大模型推理 API 的两层签名认证：钱包业务签名 + 接口级 ECDSA 签名。</p></section>
+      <section class="hero" id="zh-vps-intro"><div class="hero-topbar"><p class="eyebrow">enigmhaven VPS API</p></div><h1 class="hero-title">使用 bitgo 消费 enigmhaven VPS</h1><p class="lead">bitgo 除了支持大模型 token 消费，也可将 VPS 的创建、查询、启停与删除等服务调用纳入同一套可审计的支付授权链路。本文档覆盖 VPS 规格、SSH Key 与 VPS 实例的全部 API。</p><p class="hero-note">只有 <code>GET /vps/v1/resources</code> 免签。其余接口均复用大模型推理 API 的两层签名认证：钱包业务签名 + 接口级 ECDSA 签名。</p><div class="warning">重要提示：使用 bitgo 消费 VPS 仅适用于项目开发早期的实验性 POC 场景，不建议承载生产业务。bitgo 零钱包余额耗尽后，关联 VPS 实例将被自动删除；请在余额不足前完成必要的数据备份与资源迁移。</div></section>
 
       <section class="section" id="zh-vps-resources">
         <h2>VPS 规格 API</h2>
