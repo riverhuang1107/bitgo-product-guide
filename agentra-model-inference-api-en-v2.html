@@ -1,0 +1,1251 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="agentra model inference API calls, pricing, security, and appendix.">
+  <title>agentra Model Inference API (v2)</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #0b1324;
+      --muted: #53627a;
+      --paper: #f7fbff;
+      --soft: #eef6ff;
+      --line: #c9d9ef;
+      --blue: #0069ff;
+      --blue-dark: #003ea8;
+      --blue-soft: #dcecff;
+      --black: #06111f;
+      --white: #ffffff;
+      --code: #171717;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      line-height: 1.68;
+    }
+
+    .shell {
+      min-height: 100vh;
+      background:
+        linear-gradient(180deg, rgba(0, 105, 255, 0.14), rgba(247, 251, 255, 0) 340px),
+        radial-gradient(circle at top right, rgba(0, 105, 255, 0.16), transparent 360px);
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 18px 24px;
+      background: rgba(247, 251, 255, 0.92);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(201, 217, 239, 0.72);
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--blue);
+      color: var(--white);
+      font-weight: 900;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 18px;
+      font-size: 14px;
+    }
+
+    .nav-links a {
+      color: var(--ink);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+    }
+
+    .nav-links a:hover {
+      border-color: var(--ink);
+    }
+
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 36px 24px 88px;
+    }
+
+    .hero {
+      margin-bottom: 22px;
+      scroll-margin-top: 92px;
+    }
+
+    .hero-copy {
+      width: 100%;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      padding: 7px 12px;
+      border: 1px solid var(--blue);
+      border-radius: 999px;
+      background: var(--blue);
+      color: var(--white);
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .hero-topbar {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .hero-topbar .eyebrow {
+      margin-bottom: 0;
+    }
+
+    .lead {
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .hero-title {
+      margin: 0 0 12px;
+      padding: 0;
+      color: var(--ink);
+      font-size: 28px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .hero-note {
+      margin: 12px 0 0;
+      padding: 13px 16px;
+      border-left: 6px solid var(--blue);
+      border-radius: 8px;
+      background: var(--blue-soft);
+      color: var(--blue-dark);
+      font-weight: 800;
+    }
+
+    .copy-block {
+      width: 100%;
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.62);
+    }
+
+    .copy-text-wrap {
+      position: relative;
+    }
+
+    .copy-text-block {
+      margin: 0;
+      padding: 16px 66px 16px 18px;
+      border: 1px solid rgba(0, 105, 255, 0.34);
+      border-left: 6px solid var(--blue);
+      border-radius: 8px;
+      background: #f4f9ff;
+      color: var(--ink);
+      line-height: 1.62;
+    }
+
+    .agent-doc-link {
+      display: block;
+      margin-top: 12px;
+      color: var(--ink);
+      font-weight: 400;
+    }
+
+    .agent-doc-link a {
+      color: var(--blue);
+      font-weight: 800;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      overflow-wrap: anywhere;
+    }
+
+    .agent-doc-link a:hover,
+    .agent-doc-link a:focus-visible {
+      color: var(--blue-dark);
+      outline: none;
+    }
+
+    .copy-actions {
+      position: absolute;
+      right: 14px;
+      bottom: 14px;
+      z-index: 1;
+    }
+
+    .copy-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      border: 1px solid #8fc2ff;
+      border-radius: 8px;
+      background: var(--blue);
+      color: var(--white);
+      cursor: pointer;
+      transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
+    }
+
+    .copy-button svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .copy-button[data-state="success"] {
+      background: var(--blue-dark);
+    }
+
+    .copy-button[data-state="error"] {
+      background: #b42318;
+      border-color: #ffdad6;
+    }
+
+    .copy-button:hover,
+    .copy-button:focus-visible {
+      background: #1d7bff;
+      border-color: var(--white);
+      outline: none;
+      transform: translateY(-1px);
+    }
+
+    .prompt-copy-wrap {
+      position: relative;
+    }
+
+    .prompt-copy-wrap pre {
+      margin-top: 8px;
+    }
+
+    .system-prompt-intro {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      justify-content: space-between;
+      margin: 0 0 12px;
+    }
+
+    .system-prompt-intro p {
+      flex: 1 1 auto;
+      margin: 0;
+      min-width: 0;
+    }
+
+    .system-prompt-copy-actions {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      margin: 0;
+    }
+
+    .system-prompt-copy-button {
+      gap: 7px;
+      width: auto;
+      height: 32px;
+      padding: 0 12px;
+      border-color: rgba(0, 105, 255, 0.28);
+      background: var(--white);
+      color: var(--blue-dark);
+      font-size: 13px;
+      font-weight: 800;
+      box-shadow: 0 6px 16px rgba(0, 105, 255, 0.10);
+    }
+
+    .system-prompt-copy-button:hover,
+    .system-prompt-copy-button:focus-visible {
+      background: var(--blue-soft);
+      border-color: var(--blue);
+      color: var(--blue-dark);
+    }
+
+    .system-prompt-copy-button[data-state="success"] {
+      background: var(--blue);
+      color: var(--white);
+      border-color: var(--blue);
+    }
+
+    .system-prompt-copy-button[data-state="error"] {
+      background: #fff5f5;
+      color: #b42318;
+      border-color: #ffdad6;
+    }
+
+    .system-prompt-copy-button .copy-button-label {
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .system-prompt-copy-actions .copy-status {
+      position: static;
+      width: auto;
+      height: auto;
+      margin: 0 0 0 8px;
+      padding: 0;
+      overflow: visible;
+      clip: auto;
+      border: 0;
+      color: var(--blue-dark);
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 32px;
+      z-index: 1;
+    }
+
+    .copy-status {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      padding: 0;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 28px;
+    }
+
+    .metric {
+      padding: 14px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      border-radius: 8px;
+    }
+
+    .metric strong {
+      display: block;
+      color: #8fc2ff;
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .metric span {
+      display: block;
+      margin-top: 8px;
+      color: #c5d8f2;
+      font-size: 12px;
+    }
+
+    .section {
+      margin-top: 28px;
+      scroll-margin-top: 92px;
+      padding: 32px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .section.dark {
+      border-color: var(--black);
+      background: var(--black);
+      color: var(--white);
+    }
+
+    .section.dark p,
+    .section.dark li {
+      color: #e9f3ff;
+    }
+
+    .section.dark h2,
+    .section.dark h3 {
+      color: #8fc2ff;
+    }
+
+    .section h2 {
+      margin: 0 0 16px;
+      padding: 0;
+      border: 0;
+      font-size: 28px;
+      line-height: 1.2;
+    }
+
+    .section h3 {
+      margin: 24px 0 10px;
+      font-size: 18px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 18px;
+    }
+
+    .grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .tile {
+      min-width: 0;
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--soft);
+      overflow-wrap: anywhere;
+    }
+
+    .tile strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 17px;
+    }
+
+    .tile span {
+      color: #34445c;
+    }
+
+    .text-highlight {
+      display: inline;
+      padding: 2px 5px;
+      border-radius: 6px;
+      background: var(--blue-soft);
+      color: var(--blue-dark);
+      font-weight: 800;
+    }
+
+    .coin-heading {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .coin-title {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+      min-width: 0;
+      padding-top: 2px;
+    }
+
+    .coin-title strong {
+      margin: 0;
+    }
+
+    .coin-logo {
+      flex: 0 0 auto;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      box-shadow: inset 0 0 0 1px rgba(6, 17, 31, 0.12);
+    }
+
+    .coin-logo.eth {
+      background: #eef2ff;
+      color: #627eea;
+    }
+
+    .coin-logo.ltc {
+      background: #eef4ff;
+      color: #345d9d;
+    }
+
+    .coin-logo.btc {
+      background: #fff4df;
+      color: #f7931a;
+    }
+
+    .coin-tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: var(--white);
+      color: var(--blue-dark);
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.2;
+      box-shadow: inset 0 0 0 1px rgba(0, 105, 255, 0.24);
+    }
+
+    .coin-tag.fast {
+      background: #e7f7ef;
+      color: #17633a;
+      box-shadow: inset 0 0 0 1px rgba(23, 99, 58, 0.2);
+    }
+
+    .coin-tag.medium {
+      background: #eef4ff;
+      color: #345d9d;
+      box-shadow: inset 0 0 0 1px rgba(52, 93, 157, 0.22);
+    }
+
+    .coin-tag.slow {
+      background: #fff4df;
+      color: #8c4f00;
+      box-shadow: inset 0 0 0 1px rgba(140, 79, 0, 0.22);
+    }
+
+    .deposit-qr {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      margin: 16px 0;
+    }
+
+    .deposit-qr img {
+      width: min(100%, 220px);
+      aspect-ratio: 1;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--white);
+    }
+
+    .deposit-qr .qr-caption {
+      color: var(--blue-dark);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .section.dark .tile {
+      border-color: #c9d9ef;
+      background: #f4f9ff;
+      color: var(--ink);
+    }
+
+    .section.dark .tile strong {
+      color: var(--ink);
+    }
+
+    .section.dark .tile span {
+      color: #34445c;
+    }
+
+    .section.dark .tile code {
+      background: var(--blue-soft);
+      color: var(--blue-dark);
+    }
+
+    .section.dark .callout {
+      color: var(--ink);
+    }
+
+    .section.dark .callout code {
+      background: var(--white);
+      color: var(--blue-dark);
+      font-weight: 800;
+    }
+
+    .section.dark .step-list li {
+      color: var(--ink);
+    }
+
+    .section.dark .step-list li code {
+      background: var(--blue-soft);
+      color: var(--blue-dark);
+      font-weight: 800;
+    }
+
+    .workflow-figure {
+      margin: 16px 0 16px;
+      padding: 8px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--white);
+    }
+
+    .workflow-figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 6px;
+    }
+
+    .step-list {
+      counter-reset: steps;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .step-list li {
+      counter-increment: steps;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+      min-width: 0;
+      min-height: 154px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--white);
+      color: var(--ink);
+      line-height: 1.55;
+      overflow-wrap: anywhere;
+    }
+
+    .step-list li::before {
+      content: counter(steps, decimal-leading-zero);
+      display: inline-flex;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: var(--blue);
+      color: var(--white);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 18px 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .table-scroll {
+      overflow-x: auto;
+      margin: 18px 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .table-scroll table {
+      min-width: 980px;
+      margin: 0;
+      border: 0;
+      border-radius: 0;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 12px 14px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th:nth-child(-n + 2),
+    td:nth-child(-n + 2),
+    td:nth-child(-n + 2) code {
+      white-space: nowrap;
+      word-break: normal;
+      overflow-wrap: normal;
+    }
+
+    .field-dictionary td:nth-child(2),
+    .field-dictionary td:nth-child(2) code {
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    th {
+      background: var(--black);
+      color: #8fc2ff;
+      font-weight: 800;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    code {
+      border-radius: 5px;
+      background: rgba(0, 105, 255, 0.14);
+      color: var(--blue-dark);
+      padding: 0.16em 0.36em;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.92em;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .dark code {
+      background: rgba(0, 105, 255, 0.18);
+      color: #8fc2ff;
+    }
+
+    pre {
+      overflow-x: auto;
+      margin: 16px 0;
+      padding: 18px;
+      border: 1px solid rgba(0, 105, 255, 0.34);
+      border-radius: 8px;
+      background: var(--code);
+      color: #f4f9ff;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+      overflow-wrap: normal;
+      word-break: normal;
+    }
+
+    ul, ol {
+      padding-left: 24px;
+    }
+
+    .callout {
+      margin-top: 18px;
+      padding: 18px 20px;
+      border-left: 6px solid var(--blue);
+      background: var(--blue-soft);
+      border-radius: 8px;
+      font-weight: 700;
+    }
+
+    .warning {
+      margin-top: 18px;
+      padding: 18px 20px;
+      border-left: 6px solid #cc3a3a;
+      background: #fff0f0;
+      border-radius: 8px;
+      color: #7c1d1d;
+      font-weight: 700;
+    }
+
+    .footer-note {
+      margin-top: 34px;
+      color: var(--muted);
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .footer-note a {
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    @media (max-width: 900px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .step-list,
+      .grid,
+      .grid.three {
+        grid-template-columns: 1fr;
+      }
+
+      .nav {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .nav-links {
+        flex-wrap: wrap;
+      }
+
+      table {
+        display: block;
+        max-width: 100%;
+        overflow-x: auto;
+      }
+
+      .table-scroll {
+        max-width: 100%;
+      }
+
+    }
+
+    @media (max-width: 640px) {
+      main {
+        padding: 26px 14px 56px;
+      }
+
+      .section {
+        padding: 22px;
+      }
+
+      .hero-copy {
+        padding: 0;
+      }
+
+      .lead {
+        font-size: 16px;
+        line-height: 1.55;
+      }
+
+      .hero-note {
+        margin-top: 12px;
+        padding: 12px 14px;
+      }
+
+      .copy-block {
+        padding: 20px;
+      }
+
+      .copy-text-block {
+        padding: 16px 16px 58px;
+      }
+
+      .hero-topbar {
+        align-items: flex-start;
+      }
+
+      .copy-actions {
+        right: 14px;
+        bottom: 14px;
+      }
+
+      .copy-button {
+        width: 34px;
+      }
+
+      .metrics {
+        grid-template-columns: 1fr;
+      }
+    }
+  
+    :root { --topbar-height: 68px; --sidebar-width: 284px; }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: auto; scroll-padding-top: calc(var(--topbar-height) + 24px); overflow-x: hidden; }
+    body { margin: 0; min-width: 320px; overflow-x: hidden; }
+    body.nav-open { overflow: hidden; }
+    @view-transition { navigation: auto; }
+    .app-header { view-transition-name: app-header; }
+    .doc-sidebar { view-transition-name: doc-sidebar; }
+    .doc-main { view-transition-name: doc-main; }
+    ::view-transition-old(root), ::view-transition-new(root), ::view-transition-old(app-header), ::view-transition-new(app-header), ::view-transition-old(doc-sidebar), ::view-transition-new(doc-sidebar) { animation:none; mix-blend-mode:normal; }
+    ::view-transition-old(doc-main) { animation:140ms ease both doc-content-out; }
+    ::view-transition-new(doc-main) { animation:220ms ease both doc-content-in; }
+    @keyframes doc-content-out { to { opacity:0; transform:translateY(-4px); } }
+    @keyframes doc-content-in { from { opacity:0; transform:translateY(6px); } }
+    .app-header {
+      position: fixed; inset: 0 0 auto 0; z-index: 1000; height: var(--topbar-height);
+      display: flex; align-items: center; justify-content: space-between; gap: 20px;
+      padding: 0 28px; border-bottom: 1px solid var(--line);
+      background: rgba(247, 251, 255, .96); backdrop-filter: blur(16px);
+    }
+    .app-brand { display:flex; align-items:center; gap:12px; min-width:0; color:var(--ink); font-weight:800; font-size:18px; }
+    .app-brand .brand-mark { width:34px; height:34px; flex:0 0 34px; border-radius:8px; display:grid; place-items:center; color:#fff; background:var(--blue); box-shadow:0 8px 18px rgba(0,105,255,.18); }
+    .header-actions { display:flex; align-items:center; gap:10px; }
+    .language-switch { display:flex; padding:3px; border:1px solid var(--line); border-radius:9px; background:var(--white); }
+    .language-button { border:0; border-radius:6px; padding:8px 14px; color:var(--muted); background:transparent; font:inherit; font-size:14px; font-weight:700; cursor:pointer; }
+    .language-button:hover { color:var(--blue-dark); background:var(--soft); }
+    .language-button[aria-pressed="true"] { color:#fff; background:var(--blue); }
+    .menu-button { display:none; width:40px; height:40px; border:1px solid var(--line); border-radius:9px; background:#fff; color:var(--ink); cursor:pointer; }
+    .menu-button svg { width:21px; height:21px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; }
+    .layout { min-height:100vh; padding-top:var(--topbar-height); }
+    .doc-sidebar {
+      position:fixed; z-index:900; top:var(--topbar-height); bottom:0; left:0; width:var(--sidebar-width);
+      overflow-y:auto; padding:28px 20px 40px; border-right:1px solid var(--line); background:rgba(247,251,255,.98);
+    }
+    .sidebar-group + .sidebar-group { margin-top:30px; padding-top:26px; border-top:1px solid var(--line); }
+    .sidebar-title { margin:0 10px 10px; color:var(--ink); font-size:13px; line-height:1.4; font-weight:800; letter-spacing:.04em; text-transform:uppercase; }
+    .sidebar-nav { display:grid; gap:3px; }
+    .sidebar-link { position:relative; display:block; padding:9px 12px; border-radius:7px; color:var(--muted); text-decoration:none; font-size:14px; line-height:1.4; font-weight:650; transition:background .16s ease,color .16s ease; }
+    .sidebar-link:hover { color:var(--blue-dark); background:var(--soft); }
+    .sidebar-link.active { color:var(--blue); background:var(--blue-soft); }
+    .sidebar-link.active::before { content:""; position:absolute; left:-20px; top:7px; bottom:7px; width:3px; border-radius:0 3px 3px 0; background:var(--blue); }
+    .doc-main { margin-left:var(--sidebar-width); min-width:0; }
+    .language-document { display:block; width:min(100%, 1120px); margin:0 auto; padding:28px 54px 80px; }
+    .language-document[hidden] { display:none !important; }
+    .language-document main { width:100%; }
+    .language-document .hero { min-height:0; margin:0 0 28px; padding:0 0 38px; background:none; border-bottom:1px solid var(--line); }
+    .language-document .hero::before, .language-document .hero::after { display:none; }
+    .language-document .hero-copy { width:100%; }
+    .language-document .hero-topbar { margin-bottom:16px; }
+    .language-document .eyebrow { color:var(--blue); background:transparent; border:0; padding:0; font-size:14px; letter-spacing:0; }
+    .language-document .hero-title { max-width:900px; margin:0 0 20px; font-size:clamp(38px,4.2vw,58px); line-height:1.08; letter-spacing:-.035em; }
+    .language-document .lead { max-width:900px; font-size:18px; line-height:1.78; }
+    .language-document .section { margin:0; padding:38px 0; border:0; border-radius:0; background:transparent; box-shadow:none; scroll-margin-top:calc(var(--topbar-height) + 22px); }
+    .language-document > .section:first-child { padding-top:0; }
+    .language-document .section.dark { margin-inline:-24px; padding:38px 24px; border-radius:14px; border-bottom:0; background:var(--black); }
+    .language-document .section + .section { margin-top:0; padding-top:0; }
+    .language-document .section h2 { font-size:30px; letter-spacing:-.02em; }
+    .language-document .section h3 { margin-top:30px; }
+    .language-document .grid { gap:16px; }
+    .language-document .tile { border-radius:10px; box-shadow:none; }
+    .language-document pre { max-width:100%; overflow:auto; border-radius:10px; }
+    .language-document table { min-width:640px; }
+    .language-document .table-scroll { max-width:100%; overflow-x:auto; }
+    .language-document img { max-width:100%; height:auto; }
+    .language-document .footer-note { margin-top:40px; }
+    .drawer-backdrop { display:none; position:fixed; z-index:850; inset:var(--topbar-height) 0 0; background:rgba(6,17,31,.42); }
+    @media (max-width: 980px) {
+      :root { --sidebar-width:260px; }
+      .language-document { padding-inline:34px; }
+      .language-document .hero-title { font-size:42px; }
+    }
+    @media (max-width: 760px) {
+      :root { --topbar-height:62px; }
+      .app-header { padding:0 16px; }
+      .app-brand { font-size:16px; }
+      .app-brand .brand-mark { width:30px; height:30px; flex-basis:30px; border-radius:7px; }
+      .menu-button { display:grid; place-items:center; }
+      .language-button { padding:7px 10px; }
+      .doc-sidebar { transform:translateX(-100%); width:min(84vw,300px); transition:transform .22s ease; box-shadow:18px 0 40px rgba(6,17,31,.12); }
+      body.nav-open .doc-sidebar { transform:translateX(0); }
+      body.nav-open .drawer-backdrop { display:block; }
+      .doc-main { margin-left:0; }
+      .language-document { padding:34px 20px 64px; }
+      .language-document .hero { padding-bottom:30px; }
+      .language-document .hero-title { font-size:clamp(34px,10vw,44px); }
+      .language-document .lead { font-size:16px; }
+      .language-document .section { padding:30px 0; }
+      .language-document .section.dark { margin-inline:-10px; padding:30px 14px; border-radius:12px; }
+      .language-document .section h2 { font-size:26px; }
+      .language-document .grid, .language-document .grid.three, .language-document .metrics { grid-template-columns:1fr; }
+      .language-document table { min-width:620px; }
+      .language-document .api-auth-table { display:block; min-width:0; border:0; overflow:visible; }
+      .language-document .api-auth-table thead { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap; }
+      .language-document .api-auth-table tbody,
+      .language-document .api-auth-table tr,
+      .language-document .api-auth-table td { display:block; width:100%; }
+      .language-document .api-auth-table tr { margin-bottom:12px; border:1px solid var(--line); border-radius:8px; overflow:hidden; background:var(--white); }
+      .language-document .api-auth-table td { padding:12px 14px; border-bottom:1px solid var(--line); white-space:normal; overflow-wrap:anywhere; word-break:break-word; }
+      .language-document .api-auth-table td:last-child { border-bottom:0; }
+      .language-document .api-auth-table td::before { display:block; margin-bottom:5px; color:var(--blue-dark); font-size:12px; font-weight:800; }
+      .language-document .api-auth-table td:nth-child(1)::before { content:"Item"; }
+      .language-document .api-auth-table td:nth-child(2)::before { content:"Value"; }
+      .language-document .api-auth-table td:nth-child(3)::before { content:"Description"; }
+      .language-document .api-auth-table td code { white-space:normal; overflow-wrap:anywhere; word-break:break-word; }
+      .language-document .copy-actions { position:static; margin:12px 0 0; }
+    }
+    @media (max-width: 480px) {
+      .app-brand > span:last-child { display:none; }
+      .header-actions { gap:7px; }
+      .language-button { padding-inline:9px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior:auto; }
+      *, *::before, *::after { transition-duration:.01ms !important; animation-duration:.01ms !important; animation-iteration-count:1 !important; }
+    }
+
+  
+    .app-brand { text-decoration:none; }
+    .language-button { display:inline-flex; align-items:center; justify-content:center; text-decoration:none; }
+</style>
+</head>
+<body>
+  <header class="app-header">
+    <a class="app-brand" href="agentra-product-overview-en-v2.html" aria-label="agentra Product Docs home"><span class="brand-mark" aria-hidden="true">a</span><span>Agentra Product Docs</span></a>
+    <div class="header-actions">
+      <div class="language-switch" role="group" aria-label="Language / 语言">
+        <a class="language-button" href="agentra-model-inference-api-zh-v2.html"  aria-pressed="false">中文</a>
+        <a class="language-button" href="agentra-model-inference-api-en-v2.html" aria-current="page" aria-pressed="true">English</a>
+      </div>
+      <button class="menu-button" id="menu-button" type="button" aria-controls="doc-sidebar" aria-expanded="false" aria-label="Open documentation navigation"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg></button>
+    </div>
+  </header>
+  <div class="layout">
+    <aside class="doc-sidebar" id="doc-sidebar" aria-label="Documentation navigation"><div class="sidebar-group"><h2 class="sidebar-title">Product Overview</h2><nav class="sidebar-nav" aria-label="Product Overview"><a class="sidebar-link" href="agentra-product-overview-en-v2.html#en-why-agentra" data-section="why-agentra" data-category="overview">Why agentra?</a><a class="sidebar-link" href="agentra-product-overview-en-v2.html#en-overview" data-section="overview" data-category="overview">Product Overview</a><a class="sidebar-link" href="agentra-product-overview-en-v2.html#en-workflow" data-section="workflow" data-category="overview">Workflow</a><a class="sidebar-link" href="agentra-product-overview-en-v2.html#en-system-prompt" data-section="system-prompt" data-category="overview">System Prompt</a><a class="sidebar-link" href="agentra-product-overview-en-v2.html#en-wallet-prep" data-section="wallet-prep" data-category="overview">Deposit & Wallet</a><a class="sidebar-link" href="agentra-product-overview-en-v2.html#en-signing-auth" data-section="signing-auth" data-category="overview">Signing & Authentication</a></nav></div><div class="sidebar-group"><h2 class="sidebar-title">Model Inference API</h2><nav class="sidebar-nav" aria-label="Model Inference API"><a class="sidebar-link" href="#en-api-call" data-section="api-call" data-category="api">Reasoning API Call</a><a class="sidebar-link" href="#en-model-pricing" data-section="model-pricing" data-category="api">Model Pricing</a><a class="sidebar-link" href="#en-security" data-section="security" data-category="api">Security</a><a class="sidebar-link" href="#en-appendix" data-section="appendix" data-category="api">Appendix</a></nav></div><div class="sidebar-group"><h2 class="sidebar-title">enigmhaven VPS API</h2><nav class="sidebar-nav" aria-label="enigmhaven VPS API"><a class="sidebar-link" href="agentra-enigmhaven-vps-api-en-v2.html#en-vps-resources">VPS Resources API</a><a class="sidebar-link" href="agentra-enigmhaven-vps-api-en-v2.html#en-ssh-keys">SSH Key API</a><a class="sidebar-link" href="agentra-enigmhaven-vps-api-en-v2.html#en-vps">VPS API</a></nav></div></aside>
+    <div class="drawer-backdrop" id="drawer-backdrop"></div>
+    <div class="doc-main"><article class="language-document" data-language-document="en" lang="en"><section class="section" id="en-api-call">
+        <h2>Reasoning API Call</h2>
+        <p>The agent or software writes task context into <code>messages</code>, selects a model, and sends the request to the reasoning API. The reasoning API supports both the Anthropic Messages and OpenAI Chat Completions protocols. Both protocols use the same signature-authentication headers, but they use different request endpoints, maximum-output-token parameters, and response content fields. After an inference API call incurs consumption, use the agentra wallet information and wallet consumption-records query endpoints to retrieve the latest agentra wallet balance and consumption details.</p>
+        <table class="api-auth-table">
+          <colgroup><col><col><col></colgroup>
+          <thead><tr><th>Item</th><th>Value</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>Anthropic Messages endpoint</code></td><td><code class="endpoint-url">https://api-agentra.enigmhaven.com/v1/messages</code></td><td>Use <code>max_tokens</code> and read model output from the response <code>content</code> field</td></tr>
+            <tr><td><code>OpenAI Chat Completions endpoint</code></td><td><code class="endpoint-url">https://api-agentra.enigmhaven.com/v1/chat/completions</code></td><td>Use <code>max_completion_tokens</code> and read model output from the response <code>choices[].message.content</code> field</td></tr>
+            <tr><td><code>method</code></td><td><code>POST</code></td><td>Send a JSON request body</td></tr>
+            <tr><td><code>Content-Type</code></td><td><code>application/json</code></td><td>Always use JSON</td></tr>
+            <tr><td><code>X-Params</code></td><td><code>BASE64_ENCODED_WALLET_PARAMS</code></td><td>Wallet business-signature authentication parameter</td></tr>
+            <tr><td><code>X-Nonce</code></td><td><code>RANDOM_NONCE</code></td><td>Random string used in the interface-level ECDSA signature</td></tr>
+            <tr><td><code>X-Signature</code></td><td><code>ECDSA_SIGNATURE_HEX</code></td><td>ASN.1/DER hex signature over <code>X-Params + X-Nonce</code></td></tr>
+            <tr><td><code>X-Public-Key</code></td><td><code>BASE64_SPKI_DER_P256_PUBLIC_KEY</code></td><td>Standard-Base64 encoding of the X.509 SubjectPublicKeyInfo (SPKI) DER bytes for the local P-256 ECDSA public key; see Signing &amp; Authentication in the Product Overview</td></tr>
+          </tbody>
+        </table>
+        <h3>Anthropic Messages request example</h3>
+        <pre><code class="language-json">{
+  &quot;model&quot;: &quot;claude-4.6-opus&quot;,
+  &quot;max_tokens&quot;: 1024,
+  &quot;stream&quot;: false,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;Run one large-model reasoning task based on the current application context.&quot;
+    }
+  ]
+}</code></pre>
+        <h3>Anthropic Messages response structure</h3>
+        <pre><code class="language-json">{
+  &quot;status&quot;: 200,
+  &quot;body&quot;: {
+    &quot;content&quot;: [{ &quot;type&quot;: &quot;text&quot;, &quot;text&quot;: &quot;Model response content...&quot; }],
+    &quot;model&quot;: &quot;claude-4.6-opus&quot;,
+    &quot;role&quot;: &quot;assistant&quot;,
+    &quot;stop_reason&quot;: &quot;end_turn&quot;,
+    &quot;usage&quot;: {
+      &quot;input_tokens&quot;: 23,
+      &quot;output_tokens&quot;: 956,
+      &quot;input_token_unit_price&quot;: 500,
+      &quot;output_token_unit_price&quot;: 2520,
+      &quot;consume_amount&quot;: 2420620,
+      &quot;balance&quot;: 493482537,
+      &quot;hash&quot;: &quot;...&quot;
+    }
+  }
+}</code></pre>
+        <h3>OpenAI Chat Completions request example</h3>
+        <pre><code class="language-json">{
+  &quot;model&quot;: &quot;claude-4.6-opus&quot;,
+  &quot;max_completion_tokens&quot;: 1024,
+  &quot;stream&quot;: false,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;Run one large-model reasoning task based on the current application context.&quot;
+    }
+  ]
+}</code></pre>
+        <h3>OpenAI Chat Completions response structure</h3>
+        <pre><code class="language-json">{
+  &quot;choices&quot;: [
+    {
+      &quot;finish_reason&quot;: &quot;stop&quot;,
+      &quot;index&quot;: 0,
+      &quot;message&quot;: {
+        &quot;content&quot;: &quot;Model response content...&quot;,
+        &quot;role&quot;: &quot;assistant&quot;
+      }
+    }
+  ],
+  &quot;model&quot;: &quot;claude-4.6-opus&quot;,
+  &quot;object&quot;: &quot;chat.completion&quot;,
+  &quot;usage&quot;: {
+    &quot;prompt_tokens&quot;: 23,
+    &quot;completion_tokens&quot;: 956,
+    &quot;total_tokens&quot;: 979,
+    &quot;input_token_unit_price&quot;: 500,
+    &quot;output_token_unit_price&quot;: 2520,
+    &quot;consume_amount&quot;: 2420620,
+    &quot;balance&quot;: 493482537,
+    &quot;hash&quot;: &quot;...&quot;
+  }
+}</code></pre>
+        <h3>usage field notes</h3>
+        <ul>
+          <li>The actual prices for <code>input_token_unit_price</code> and <code>output_token_unit_price</code> are the field values multiplied by <code>10^-5</code>. Unit prices are expressed per 1,000 tokens.</li>
+          <li>The actual consumption amount for <code>consume_amount</code> is the field value multiplied by <code>10^-8</code>.</li>
+          <li>The actual balance for <code>balance</code> is the field value multiplied by <code>10^-8</code>.</li>
+          <li>If the server response does not include <code>usage</code>, the CLI should output <code>&quot;usage&quot;: null</code> and should not estimate or fabricate values.</li>
+        </ul>
+      </section>
+<section class="section" id="en-model-pricing">
+        <h2>Models and Pricing</h2>
+        <p>Select a model through the <code>model</code> field in the request body. For the main flow, choose common models by quality, latency, and cost; the full pricing table is in the appendix.</p>
+        <div class="grid">
+          <div class="tile"><strong>Low cost</strong><span><code>openai/gpt-5.4-nano</code> and <code>deepseek/deepseek-v4-flash</code> are suitable for batch classification, summaries, and lightweight decisions.</span></div>
+          <div class="tile"><strong>High quality</strong><span><code>claude-4.6-opus</code> and <code>anthropic/claude-4.8-opus</code> are suitable for complex reasoning, long-form analysis, and high-quality generation.</span></div>
+          <div class="tile"><strong>Code / complex reasoning</strong><span><code>openai/gpt-5.2-codex</code> and <code>openai/gpt-5.3-codex</code> are suitable for software development, code review, and engineering tasks.</span></div>
+          <div class="tile"><strong>Fast response</strong><span><code>claude-4.5-haiku</code> and <code>minimax/minimax-m2.5-highspeed</code> are suitable for interactive agents and low-latency business flows.</span></div>
+        </div>
+      </section>
+<section class="section" id="en-security">
+        <h2>Security Notes</h2>
+        <ul>
+          <li>Do not write real private keys, complete <code>X-Params</code>, complete <code>X-Signature</code>, <code>X-Public-Key</code>, or management tokens into repositories.</li>
+          <li>Chain type, deposit network, and amount must be confirmed by a human; <code>money_id</code> is generated automatically by the agent and should not be manually requested from the user.</li>
+          <li>Private keys should be injected through environment variables, a secret manager, or the deployment platform, and should not appear in config templates.</li>
+          <li>Before depositing, verify the official receiving address and mainnet. Transfers to a wrong address or wrong network cannot be automatically recovered by the agent or software.</li>
+          <li>When software calls the reasoning API, record <code>usage</code>, but do not log sensitive headers or private-key material.</li>
+          <li>Example nonce, signatures, balances, hashes, and token counts change with each call and should not be hard-coded into business logic.</li>
+        </ul>
+      </section>
+<section class="section" id="en-appendix">
+        <h2>Appendix</h2>
+        <h3>Full model table</h3>
+        <p>Prices are shown in USD / 1,000,000 tokens.</p>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>Model ID</th><th>Model name</th><th>Provider</th><th>Input price</th><th>Output price</th></tr></thead>
+            <tbody>
+              <tr><td><code>deepseek/deepseek-v4-flash-20260731</code></td><td>Deepseek-V4-Flash-20260731</td><td>DeepSeek</td><td>0.14493</td><td>0.28986</td></tr>
+              <tr><td><code>deepseek/deepseek-v4-pro-202606</code></td><td>DeepSeek-V4-Pro-202606</td><td>DeepSeek</td><td>0.43478</td><td>0.86957</td></tr>
+              <tr><td><code>deepseek/deepseek-v4-flash-202605</code></td><td>DeepSeek-V4-Flash-202605</td><td>DeepSeek</td><td>0.14493</td><td>0.28986</td></tr>
+              <tr><td><code>deepseek/deepseek-v4-flash</code></td><td>DeepSeek-V4-Flash</td><td>DeepSeek</td><td>0.14</td><td>0.28</td></tr>
+              <tr><td><code>deepseek/deepseek-v4-pro</code></td><td>DeepSeek-V4-Pro</td><td>DeepSeek</td><td>1.67</td><td>3.33</td></tr>
+              <tr><td><code>deepseek/deepseek-v3.2-251201</code></td><td>Deepseek/DeepSeek-V3.2</td><td>DeepSeek</td><td>0.28</td><td>0.42</td></tr>
+              <tr><td><code>anthropic/claude-fable-5</code></td><td>Claude Fable 5</td><td>Anthropic</td><td>10</td><td>50</td></tr>
+              <tr><td><code>anthropic/claude-sonnet-5</code></td><td>Anthropic/Claude Sonnet 5</td><td>Anthropic</td><td>2</td><td>10</td></tr>
+              <tr><td><code>anthropic/claude-opus-5</code></td><td>Claude Opus 5</td><td>Anthropic</td><td>5</td><td>25</td></tr>
+              <tr><td><code>claude-4.5-haiku</code></td><td>Claude 4.5 Haiku</td><td>Anthropic</td><td>5</td><td>5.04</td></tr>
+              <tr><td><code>claude-4.5-opus</code></td><td>Claude 4.5 Opus</td><td>Anthropic</td><td>5</td><td>25.2</td></tr>
+              <tr><td><code>claude-4.6-opus</code></td><td>Claude 4.6 Opus</td><td>Anthropic</td><td>5</td><td>25.2</td></tr>
+              <tr><td><code>claude-4.6-sonnet</code></td><td>Claude 4.6 Sonnet</td><td>Anthropic</td><td>3</td><td>15.12</td></tr>
+              <tr><td><code>anthropic/claude-4.7-opus</code></td><td>Claude 4.7 Opus</td><td>Anthropic</td><td>5</td><td>25.2</td></tr>
+              <tr><td><code>anthropic/claude-4.8-opus</code></td><td>Claude 4.8 Opus</td><td>Anthropic</td><td>5</td><td>25.2</td></tr>
+              <tr><td><code>minimax/minimax-m2.5</code></td><td>Minimax/Minimax-M2.5</td><td>Minimax</td><td>0.29</td><td>1.17</td></tr>
+              <tr><td><code>minimax/minimax-m2.5-highspeed</code></td><td>Minimax/Minimax-M2.5 Highspeed</td><td>Minimax</td><td>0.58</td><td>2.33</td></tr>
+              <tr><td><code>minimax/minimax-m2.7</code></td><td>Minimax/Minimax-M2.7</td><td>Minimax</td><td>0.29</td><td>1.17</td></tr>
+              <tr><td><code>minimax/minimax-m3</code></td><td>Minimax/Minimax-M3</td><td>Minimax</td><td>0.29</td><td>11.67</td></tr>
+              <tr><td><code>openai/gpt-5.6-sol</code></td><td>OpenAI/GPT-5.6 Sol</td><td>OpenAI</td><td>5</td><td>30</td></tr>
+              <tr><td><code>openai/gpt-5.6-terra</code></td><td>OpenAI/GPT-5.6 Terra</td><td>OpenAI</td><td>2</td><td>12</td></tr>
+              <tr><td><code>openai/gpt-5.6-luna</code></td><td>OpenAI/GPT-5.6 Luna</td><td>OpenAI</td><td>0.2</td><td>1.2</td></tr>
+              <tr><td><code>openai/gpt-5.2</code></td><td>OpenAI/GPT-5.2</td><td>OpenAI</td><td>1.764</td><td>14.112</td></tr>
+              <tr><td><code>openai/gpt-5.2-codex</code></td><td>Openai/GPT-5.2 Codex</td><td>OpenAI</td><td>1.764</td><td>14.112</td></tr>
+              <tr><td><code>openai/gpt-5.3-codex</code></td><td>Openai/GPT-5.3 Codex</td><td>OpenAI</td><td>1.764</td><td>14.112</td></tr>
+              <tr><td><code>openai/gpt-5.4</code></td><td>Openai/GPT-5.4</td><td>OpenAI</td><td>2.52</td><td>15.12</td></tr>
+              <tr><td><code>openai/gpt-5.4-mini</code></td><td>Openai/GPT-5.4 Mini</td><td>OpenAI</td><td>0.756</td><td>4.536</td></tr>
+              <tr><td><code>openai/gpt-5.4-nano</code></td><td>Openai/GPT-5.4 Nano</td><td>OpenAI</td><td>0.2016</td><td>1.26</td></tr>
+              <tr><td><code>openai/gpt-5.4-pro</code></td><td>Openai/GPT-5.4 Pro</td><td>OpenAI</td><td>30.24</td><td>181.44</td></tr>
+              <tr><td><code>openai/gpt-5.5</code></td><td>Openai/GPT-5.5</td><td>OpenAI</td><td>5.04</td><td>30.24</td></tr>
+              <tr><td><code>moonshotai/kimi-k2.5</code></td><td>Moonshotai/Kimi-K2.5</td><td>Moonshot-Kimi</td><td>0.56</td><td>2.92</td></tr>
+              <tr><td><code>moonshotai/kimi-k2.6</code></td><td>Moonshotai/Kimi-K2.6</td><td>Moonshot-Kimi</td><td>0.9</td><td>3.75</td></tr>
+              <tr><td><code>moonshotai/kimi-k2.7-code</code></td><td>Kimi-K2.7-Code</td><td>Moonshot-Kimi</td><td>0.94203</td><td>3.91304</td></tr>
+              <tr><td><code>moonshotai/kimi-k3</code></td><td>Moonshotai/Kimi-K3</td><td>Moonshot-Kimi</td><td>2.89855</td><td>14.49275</td></tr>
+              <tr><td><code>z-ai/glm-5</code></td><td>Z-AI/GLM 5</td><td>zAI</td><td>0.56</td><td>2.5</td></tr>
+              <tr><td><code>z-ai/glm-5.2</code></td><td>GLM-5.2</td><td>zAI</td><td>1.15942</td><td>4.05797</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>Full BTC request example</h3>
+        <pre><code class="language-json">{
+  &quot;method&quot;: &quot;POST&quot;,
+  &quot;url&quot;: &quot;https://api-agentra.enigmhaven.com/v1/messages&quot;,
+  &quot;headers&quot;: {
+    &quot;Content-Type&quot;: &quot;application/json&quot;,
+    &quot;X-Params&quot;: &quot;BASE64_ENCODED_WALLET_PARAMS&quot;,
+    &quot;X-Nonce&quot;: &quot;RANDOM_NONCE&quot;,
+    &quot;X-Signature&quot;: &quot;ECDSA_SIGNATURE_HEX&quot;,
+    &quot;X-Public-Key&quot;: &quot;ECDSA_PUBLIC_KEY&quot;
+  },
+  &quot;body&quot;: {
+    &quot;model&quot;: &quot;claude-4.6-opus&quot;,
+    &quot;stream&quot;: false,
+    &quot;messages&quot;: [
+      {
+        &quot;role&quot;: &quot;user&quot;,
+        &quot;content&quot;: &quot;List the 5 most popular AI open-source projects on GitHub&quot;
+      }
+    ]
+  }
+}</code></pre>
+        <h3>Full BTC response example</h3>
+        <pre><code class="language-json">{
+  &quot;status&quot;: 200,
+  &quot;body&quot;: {
+    &quot;content&quot;: [
+      {
+        &quot;type&quot;: &quot;text&quot;,
+        &quot;text&quot;: &quot;Returns a structured summary of 5 popular AI open-source projects.&quot;
+      }
+    ],
+    &quot;id&quot;: &quot;msg_c0cd43018acb49e99a3cfe19dfdfe7e4&quot;,
+    &quot;model&quot;: &quot;claude-4.6-opus&quot;,
+    &quot;role&quot;: &quot;assistant&quot;,
+    &quot;stop_reason&quot;: &quot;end_turn&quot;,
+    &quot;type&quot;: &quot;message&quot;,
+    &quot;usage&quot;: {
+      &quot;balance&quot;: 493482537,
+      &quot;cache_creation&quot;: {
+        &quot;ephemeral_1h_input_tokens&quot;: 0,
+        &quot;ephemeral_5m_input_tokens&quot;: 0
+      },
+      &quot;cache_creation_input_tokens&quot;: 0,
+      &quot;cache_read_input_tokens&quot;: 0,
+      &quot;consume_amount&quot;: 2420620,
+      &quot;hash&quot;: &quot;MzA0NTAyMjEwMGY5MjlkZDE0MzNhYTkxZTYzNzVmN2RlOGU0YjQ3MzkzN2QwMDU4NWViOGI2ZjUyNDUwYTdkMjVlNmY4OGQ2MWEwMjIwNTM5ZTdhMjAxNmEzNGRiMmQxZDc4OGI0YmRhZjQ2YjM3NmUyZjAxNmRkNmE3MTc0YjE3NTIyOGFlM2FiZDYzMg==&quot;,
+      &quot;input_token_unit_price&quot;: 500,
+      &quot;input_tokens&quot;: 23,
+      &quot;output_token_unit_price&quot;: 2520,
+      &quot;output_tokens&quot;: 956
+    }
+  }
+}</code></pre>
+        <h3>curl connectivity test</h3>
+        <pre><code>curl -X POST &quot;https://api-agentra.enigmhaven.com/v1/messages&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;X-Params: BASE64_ENCODED_WALLET_PARAMS&quot; \
+  -H &quot;X-Nonce: RANDOM_NONCE&quot; \
+  -H &quot;X-Signature: ECDSA_SIGNATURE_HEX&quot; \
+  -H &quot;X-Public-Key: ECDSA_PUBLIC_KEY&quot; \
+  --data-raw '{
+    &quot;model&quot;: &quot;claude-4.6-opus&quot;,
+    &quot;max_tokens&quot;: 1024,
+    &quot;stream&quot;: false,
+    &quot;messages&quot;: [{ &quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Hello&quot; }]
+  }'</code></pre>
+        <h3>Field dictionary</h3>
+        <table class="field-dictionary">
+          <thead><tr><th>Field</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>wallet_chain</code></td><td>Chain type. Current values are <code>eth</code>, <code>ltc</code>, or <code>btc</code>.</td></tr>
+            <tr><td><code>wallet_address</code></td><td>On-chain address used as the key ID for the user and wallet record.</td></tr>
+            <tr><td><code>money</code></td><td>Human-confirmed amount or denomination.</td></tr>
+            <tr><td><code>money_id</code></td><td>Agent-generated amount record or wallet record ID, with a format such as <code>money_20260707_a8f3c91b2e4d</code>. Generating a new random <code>money_id</code> means creating a new agentra wallet.</td></tr>
+            <tr><td><code>signature</code></td><td>Base64 string produced by signing <code>wallet_address + money + money_id</code>.</td></tr>
+            <tr><td><code>X-Params</code></td><td>Header value produced by base64-encoding the wallet parameter JSON.</td></tr>
+            <tr><td><code>X-Nonce</code></td><td>Random string used in the interface-level signature.</td></tr>
+            <tr><td><code>X-Signature</code></td><td>Strictly concatenate <code>X-Params + X-Nonce</code> in that order and calculate its SHA-256 digest. Use a local ECDSA private key with <code>ecdsa.SignASN1</code> to generate ASN.1/DER signature bytes over the digest, then hex-encode the result.</td></tr>
+            <tr><td><code>X-Public-Key</code></td><td>Standard-Base64 encoding of the X.509 SubjectPublicKeyInfo (SPKI) DER bytes for the local P-256 ECDSA public key; see Signing &amp; Authentication in the Product Overview.</td></tr>
+            <tr><td><code>usage</code></td><td>Server-returned token usage, unit prices, consumption amount, balance, and hash.</td></tr>
+          </tbody>
+        </table>
+      </section>
+<p class="footer-note"><span>agentra optimized product guide for agent software development and software-embedded reasoning workloads.</span><a href="mailto:support@enigmhaven.com">support@enigmhaven.com</a></p></article></div>
+  </div>
+<script>
+  (function () {
+    "use strict";
+    var body=document.body, sidebar=document.getElementById("doc-sidebar"), menuButton=document.getElementById("menu-button"), backdrop=document.getElementById("drawer-backdrop");
+var copyResetTimers=new WeakMap(), currentSection="api-call", scrollFrame=0, sections=[], navigationLock="", navigationLockTimer=0;
+    function setActiveLink(section){sidebar.querySelectorAll('.sidebar-link[data-category="api"]').forEach(function(link){var active=link.dataset.section===section;link.classList.toggle("active",active);if(active)link.setAttribute("aria-current","location");else link.removeAttribute("aria-current");});}
+    function updateActiveFromScroll(){if(navigationLock){currentSection=navigationLock;setActiveLink(currentSection);return;}if(!sections.length)return;var selected=sections[0],cutoff=200;if(window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-4){selected=sections[sections.length-1];}else{sections.forEach(function(section){if(section.getBoundingClientRect().top<=cutoff)selected=section;});}currentSection=selected.id.replace("en-","");setActiveLink(currentSection);}
+    function releaseNavigationLock(force){if(!navigationLock)return;var target=document.getElementById("en-"+navigationLock),topbar=parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--topbar-height"))||68,reached=target&&Math.abs(target.getBoundingClientRect().top-topbar-28)<=6,atBottom=window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-4;if(!force&&!reached&&!atBottom)return;navigationLock="";window.clearTimeout(navigationLockTimer);navigationLockTimer=0;updateActiveFromScroll();}
+    function lockNavigation(section){navigationLock=section;window.clearTimeout(navigationLockTimer);navigationLockTimer=window.setTimeout(function(){releaseNavigationLock(true);},4000);}
+    function scrollToNavigationTarget(link){if(!link.hash)return false;var target=document.querySelector(link.hash);if(!target)return false;var heading=target.querySelector("h2, .eyebrow")||target,topbar=parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--topbar-height"))||68,top=Math.max(0,window.scrollY+heading.getBoundingClientRect().top-topbar-28),commit=function(){history.pushState(null,"",link.hash);window.scrollTo({top:top,behavior:"auto"});};if(document.startViewTransition)document.startViewTransition(commit);else commit();return true;}
+    sidebar.addEventListener("click",function(event){var link=event.target.closest('.sidebar-link[data-category="api"]');if(link&&scrollToNavigationTarget(link))event.preventDefault();});
+    function alignCurrentHash(){if(!location.hash)return;var target=document.querySelector(location.hash);if(!target)return;var heading=target.querySelector("h2, .eyebrow")||target;var topbar=parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--topbar-height"))||68;window.scrollTo({top:Math.max(0,window.scrollY+heading.getBoundingClientRect().top-topbar-28),behavior:"auto"});}
+    window.addEventListener("pageshow",function(){requestAnimationFrame(alignCurrentHash);});window.addEventListener("load",alignCurrentHash);window.addEventListener("popstate",alignCurrentHash);
+    function scheduleActiveUpdate(){if(scrollFrame)return;scrollFrame=window.requestAnimationFrame(function(){scrollFrame=0;updateActiveFromScroll();});}
+    function initializeScrollSpy(){sections=Array.prototype.slice.call(document.querySelectorAll('#en-api-call, .section[id]'));window.addEventListener("scroll",scheduleActiveUpdate,{passive:true});window.addEventListener("load",updateActiveFromScroll);window.addEventListener("scrollend",releaseNavigationLock);document.querySelectorAll("img").forEach(function(image){if(!image.complete)image.addEventListener("load",scheduleActiveUpdate,{once:true});});updateActiveFromScroll();}
+    function closeDrawer(){body.classList.remove("nav-open");menuButton.setAttribute("aria-expanded","false");}
+    function setCopyState(button,status,label,statusText,state){var defaultLabel=button.dataset.copyDefaultLabel||button.getAttribute("aria-label")||"Copy";button.dataset.copyDefaultLabel=defaultLabel;button.setAttribute("aria-label",label);button.setAttribute("title",label);button.dataset.state=state||"";if(status)status.textContent=statusText||"";window.clearTimeout(copyResetTimers.get(button));copyResetTimers.set(button,window.setTimeout(function(){button.setAttribute("aria-label",defaultLabel);button.setAttribute("title",defaultLabel);button.dataset.state="";if(status)status.textContent="";},2200));}
+    function fallbackCopy(text){var textarea=document.createElement("textarea");textarea.value=text;textarea.setAttribute("readonly","");textarea.style.cssText="position:fixed;left:-9999px;top:0;opacity:0";document.body.appendChild(textarea);textarea.select();var copied=false;try{copied=document.execCommand("copy");}catch(error){}document.body.removeChild(textarea);return copied;}
+    document.addEventListener("click",function(event){var navLink=event.target.closest(".sidebar-link");if(navLink&&navLink.dataset.category==="api"){currentSection=navLink.dataset.section;setActiveLink(currentSection);lockNavigation(currentSection);closeDrawer();}var copyButton=event.target.closest("[data-copy-target]");if(!copyButton)return;var target=document.getElementById(copyButton.dataset.copyTarget),text=target?target.textContent.trim():"",status=document.getElementById(copyButton.getAttribute("aria-describedby"));if(!text){setCopyState(copyButton,status,"Copy failed; copy manually","No copyable content found.","error");return;}var success=function(){setCopyState(copyButton,status,"Copied",copyButton.dataset.copySuccessText||"Copied.","success");};if(fallbackCopy(text)){success();return;}if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(success).catch(function(){setCopyState(copyButton,status,"Copy failed; copy manually","The browser blocked clipboard access.","error");});}});
+    menuButton.addEventListener("click",function(){var open=!body.classList.contains("nav-open");body.classList.toggle("nav-open",open);menuButton.setAttribute("aria-expanded",open?"true":"false");});
+    backdrop.addEventListener("click",closeDrawer);document.addEventListener("keydown",function(event){if(event.key==="Escape")closeDrawer();});window.addEventListener("resize",function(){if(window.innerWidth>760)closeDrawer();});setActiveLink(currentSection);initializeScrollSpy();
+  }());
+  </script>
+</body>
+</html>
